@@ -1,0 +1,76 @@
+﻿@model ELLA_Store.Models.Product
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = ViewBag.TieuDe;
+    bool isEdit = Model.ProductID > 0;
+    string[] brands = (string[])ViewBag.Brands;
+    string[] images = (string[])ViewBag.Images;
+}
+
+<div class="container-custom">
+    <div class="auth-wrapper">
+        <div class="auth-box">
+            <h2>@ViewBag.TieuDe</h2>
+
+            @using (Html.BeginForm(isEdit ? "Sua" : "Them", "HangHoa", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                if (isEdit)
+                { <input type="hidden" name="ProductID" value="@Model.ProductID"> }
+
+                <div class="form-group">
+                    <label>Tên hàng hóa *</label>
+                    <input type="text" name="NamePro" value="@Model.NamePro" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("NamePro")</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Danh mục *</label>
+                    <select name="CategoryName" class="form-control">
+                        <option value="">-- Chọn danh mục --</option>
+                        @foreach (var b in brands)
+                        {
+                            <option value="@b" @(Model.CategoryName == b ? "selected" : "")>@b</option>
+                        }
+                    </select>
+                    <span class="error-msg">@Html.ValidationMessage("CategoryName")</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Giá (đ) *</label>
+                    <input type="number" name="Price" value="@(Model.Price == 0 ? "" : Model.Price.ToString("0"))" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("Price")</span>
+                </div>
+
+                if (!isEdit)
+                {
+                    <div class="form-group">
+                        <label>Tồn kho ban đầu</label>
+                        <input type="number" name="Stock" value="@Model.Stock" class="form-control">
+                        <span class="error-msg">@Html.ValidationMessage("Stock")</span>
+                    </div>
+                }
+
+                <div class="form-group">
+                    <label>Ảnh có sẵn (Content/image)</label>
+                    <select name="ImagePro" class="form-control">
+                        <option value="">-- Chọn ảnh --</option>
+                        @foreach (var img in images)
+                        {
+                            <option value="@img" @(Model.ImagePro == img ? "selected" : "")>@img</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Hoặc tải ảnh mới lên (ưu tiên hơn ảnh có sẵn)</label>
+                    <input type="file" name="anhTaiLen" accept="image/*" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("ImagePro")</span>
+                </div>
+
+                <button type="submit" class="btn">@(isEdit ? "Lưu thay đổi" : "Thêm hàng hóa")</button>
+            }
+
+            <p><a href="/HangHoa">&larr; Quay lại danh sách</a></p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+﻿@model ELLA_Store.Models.Order
+@* Partial: các dòng hàng của một đơn + tổng tiền (giao diện hóa đơn). Nhúng vào trang chi tiết đơn hàng. *@
+<table class="bill-table">
+    <thead>
+        <tr><th>Sản phẩm</th><th>Size</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var it in Model.Items)
+        {
+            <tr>
+                <td>@it.ProductName</td>
+                <td>@it.Size</td>
+                <td>@it.Quantity</td>
+                <td>@it.UnitPrice.ToString("#,##0")đ</td>
+                <td>@it.LineTotal.ToString("#,##0")đ</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<p style="text-align:right;margin:12px 0 0;">Tạm tính: @Model.SubTotal.ToString("#,##0")đ &nbsp;|&nbsp; Phí vận chuyển: @Model.ShippingFee.ToString("#,##0")đ</p>
+<div class="bill-total">
+    <strong>TỔNG TIỀN:</strong> @Model.TotalPrice.ToString("#,##0") VNĐ
+</div>

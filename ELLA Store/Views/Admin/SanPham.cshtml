@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Quản lý kho hàng";
+    var hangTon = (List<ELLA_Store.Models.Product>)ViewBag.HangTon;
+    var canNhap = (List<ELLA_Store.Models.Product>)ViewBag.CanNhap;
+}
+
+<div class="container-custom">
+    <h2>Quản Lý Kho Hàng</h2>
+
+    @if (TempData["ThongBao"] != null) { <p class="success-msg">@TempData["ThongBao"]</p> }
+    @if (TempData["Loi"] != null) { <p class="error-msg">@TempData["Loi"]</p> }
+
+    <div class="admin-stats">
+        <div class="order-box"><strong>@(hangTon.Count + canNhap.Count)</strong><br>Mẫu sản phẩm</div>
+        <div class="order-box"><strong>@ViewBag.TongTon</strong><br>Tổng tồn kho</div>
+        <div class="order-box"><strong style="color:#b45309;">@ViewBag.SapHet</strong><br>Sắp hết (&lt; 5)</div>
+        <div class="order-box"><strong style="color:#b91c1c;">@canNhap.Count</strong><br>Cần nhập (hết hàng)</div>
+    </div>
+
+    <form method="get" action="/Admin/SanPham" class="admin-toolbar">
+        <input type="text" name="q" value="@ViewBag.Q" class="form-control" placeholder="Tìm theo tên sản phẩm...">
+        <button type="submit" class="btn">Tìm</button>
+    </form>
+
+    <h3>Danh sách hàng tồn (số lượng tồn &gt; 0)</h3>
+    @Html.Partial("_HangTon", hangTon)
+
+    <h3>Danh sách hàng cần nhập (số lượng tồn = 0)</h3>
+    @Html.Partial("_CanNhap", canNhap)
+</div>

@@ -1,0 +1,10 @@
+﻿@model ELLA_Store.Models.PagedProductsViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Biti's";
+}
+
+<div class="container-custom">
+    <div class="section-title">Biti's</div>
+    @Html.Partial("_DanhSachSanPham", Model)
+</div>

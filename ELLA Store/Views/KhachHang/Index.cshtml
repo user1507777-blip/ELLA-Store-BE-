@@ -1,0 +1,184 @@
+﻿@model IEnumerable<ELLA_Store.Models.CustomerRowViewModel>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Quản lý khách hàng";
+}
+
+<!-- Nhúng bộ biểu tượng FontAwesome -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<div style="padding: 24px;
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', system-ui, sans-serif;">
+
+    <h2 style="font-size: 24px;
+                font-weight: 700;
+                color: #0f172a;
+                margin-bottom: 24px;">
+        Quản Lý Khách Hàng
+    </h2>
+
+    @if (TempData["ThongBao"] != null)
+    {<p class="success-msg">@TempData["ThongBao"]</p>}
+    @if (TempData["Loi"] != null)
+    {<p class="error-msg">@TempData["Loi"]</p>}
+
+    <!-- THANH TÌM KIẾM CHUẨN 1 HÀNG -->
+    <form method="get" action="/KhachHang"
+          style="display: flex !important;
+                 align-items: center !important;
+                 gap: 8px !important;
+                 max-width: 480px;
+                 margin-bottom: 24px;">
+        <div style="position: relative; flex: 1; display: flex; align-items: center;">
+            <i class="fa-solid fa-magnifying-glass"
+               style="position: absolute; left: 12px; color: #94a3b8;"></i>
+            <input type="text" name="q" value="@ViewBag.Q"
+                   placeholder="Tìm theo họ tên, SĐT hoặc tên đăng nhập..."
+                   style="width: 100% !important;
+                          padding: 10px 12px 10px 36px !important;
+                          border: 1px solid #cbd5e1 !important;
+                          border-radius: 8px !important;" />
+        </div>
+        <button type="submit"
+                style="padding: 10px 24px !important;
+                       background-color: #0f172a !important;
+                       color: #ffffff !important;
+                       border-radius: 8px !important;
+                       font-weight: 600 !important;
+                       white-space: nowrap !important;">
+            Tìm kiếm
+        </button>
+    </form>
+
+    <!-- BẢNG DANH SÁCH KHÁCH HÀNG -->
+    <div style="background-color: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                overflow: hidden;">
+        <table style="width: 100%;
+                      border-collapse: collapse;
+                      font-size: 14px;">
+            <thead style="background-color: #f1f5f9;
+                           border-bottom: 1px solid #e2e8f0;">
+                <tr>
+                    <th style="padding: 16px 12px; text-align: center; width: 50px;">ID</th>
+                    <th style="padding: 16px 12px;">Họ tên</th>
+                    <th style="padding: 16px 12px;">Tài khoản</th>
+                    <th style="padding: 16px 12px;">SĐT</th>
+                    <th style="padding: 16px 12px;">Email</th>
+                    <th style="padding: 16px 12px; text-align: center; width: 70px;">Số đơn</th>
+                    <th style="padding: 16px 12px; text-align: center; width: 130px;">Trạng thái</th>
+                    <th style="padding: 16px 12px; text-align: center; width: 120px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody style="color: #334155;">
+                @foreach (var k in Model)
+                {
+                    <tr style="border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
+                        <td style="padding: 16px 12px; text-align: center;">@k.CustomerID</td>
+                        <td style="padding: 16px 12px; font-weight: 600;">@k.FullName</td>
+                        <td style="padding: 16px 12px;">@k.Username</td>
+                        <td style="padding: 16px 12px;">@k.Phone</td>
+                        <td style="padding: 16px 12px;">@k.Email</td>
+                        <td style="padding: 16px 12px; text-align: center;">@k.OrderCount</td>
+
+                        <!-- NHÃN TRẠNG THÁI -->
+                        <td style="padding: 16px 12px; text-align: center; white-space: nowrap;">
+                            @if (k.IsActive)
+                            {
+                                <span style="display: inline-block;
+                                             padding: 6px 14px;
+                                             font-size: 13px;
+                                             font-weight: 600;
+                                             color: #15803d;
+                                             background-color: #dcfce7;
+                                             border-radius: 6px;
+                                             white-space: nowrap;">
+                                    Hoạt động
+                                </span>
+                            }
+                            else
+                            {
+                                <span style="display: inline-block;
+                                             padding: 6px 14px;
+                                             font-size: 13px;
+                                             font-weight: 600;
+                                             color: #b91c1c;
+                                             background-color: #fee2e2;
+                                             border-radius: 6px;
+                                             white-space: nowrap;">
+                                    Đã khóa
+                                </span>
+                            }
+                        </td>
+
+                        <!-- CÁC NÚT THAO TÁC CỐ ĐỊNH KÍCH THƯỚC -->
+                        <td style="padding: 16px 12px; text-align: center;">
+                            <div style="display: flex; gap: 6px; justify-content: center; align-items: center;">
+
+                                <a href="/KhachHang/ChiTiet/@k.CustomerID" onclick="return moKhungChiTiet(this.href);"
+                                   style="color: #0284c7; background: transparent; border: 1px solid #cbd5e1; padding: 6px 0; width: 75px; height: 32px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; text-align: center; box-sizing: border-box; text-decoration: none; display: inline-block; line-height: 18px;">
+                                    Chi tiết
+                                </a>
+
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" style="padding: 24px; text-align: center; color: #64748b;">Không có khách hàng nào.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Khung hiển thị chi tiết khách (đổ nội dung bằng AJAX) -->
+    <div id="vungHienThiLothien"
+         style="display: none;
+                background-color: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                padding: 24px;
+                margin-top: 24px;">
+        <div id="vungChuaDataAjax">Đang tải dữ liệu...</div>
+        <div style="text-align: right; margin-top: 20px;">
+            <button type="button" onclick="dongKhungChiTiet()"
+                    style="padding: 8px 18px; background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 500; cursor: pointer;">
+                Đóng thông tin
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        // Bấm "Chi tiết": nạp partial _ChiTiet bằng AJAX vào khung bên dưới (không rời trang).
+        // Nếu AJAX lỗi thì chuyển hẳn sang trang chi tiết đầy đủ.
+        function moKhungChiTiet(url) {
+            var khung = document.getElementById('vungHienThiLothien');
+            var vung = document.getElementById('vungChuaDataAjax');
+            khung.style.display = 'block';
+            vung.innerHTML = 'Đang tải hồ sơ...';
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    vung.innerHTML = xhr.responseText;
+                    khung.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    window.location.href = url;
+                }
+            };
+            xhr.onerror = function () { window.location.href = url; };
+            xhr.send();
+            return false;
+        }
+
+        function dongKhungChiTiet() {
+            document.getElementById('vungHienThiLothien').style.display = 'none';
+        }
+    </script>
+</div>

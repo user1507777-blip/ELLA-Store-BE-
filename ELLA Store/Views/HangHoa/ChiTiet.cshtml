@@ -1,0 +1,20 @@
+﻿@model ELLA_Store.Models.Product
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Chi tiết hàng hóa";
+}
+
+<div class="container-custom">
+    <h2>Chi Tiết Hàng Hóa</h2>
+
+    @Html.Partial("_ChiTietSanPham", Model)
+
+    @if ((bool)ViewBag.DaBan)
+    {
+        <p class="admin-warn">Hàng hóa này đã có trong đơn hàng nên không thể xóa.</p>
+    }
+    <p>
+        <a href="/HangHoa/Sua/@Model.ProductID" class="btn">Sửa</a>
+        <a href="/HangHoa" style="margin-left:12px;">&larr; Quay lại danh sách</a>
+    </p>
+</div>

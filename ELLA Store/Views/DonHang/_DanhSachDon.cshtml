@@ -1,0 +1,26 @@
+﻿@model List<ELLA_Store.Models.Order>
+@* Partial: bảng danh sách đơn hàng. Dùng ở trang Quản lý đơn hàng và nhúng vào trang chi tiết khách hàng. *@
+<table class="order-table">
+    <thead>
+        <tr><th>Mã đơn</th><th>Ngày đặt</th><th>Người nhận</th><th>SĐT</th><th>Thanh toán</th><th>Tổng tiền</th><th>Trạng thái</th><th></th></tr>
+    </thead>
+    <tbody>
+        @foreach (var o in Model)
+        {
+            <tr>
+                <td>#@o.OrderID</td>
+                <td>@o.CreatedAt.ToString("dd/MM/yyyy")</td>
+                <td>@o.Receiver</td>
+                <td>@o.Phone</td>
+                <td>@o.PaymentMethod</td>
+                <td>@o.TotalPrice.ToString("#,##0")đ</td>
+                <td><span class="st @ELLA_Store.Models.OrderStatus.CssClass(o.Status)">@o.Status</span></td>
+                <td><a href="/DonHang/ChiTiet/@o.OrderID">Xem</a></td>
+            </tr>
+        }
+        @if (Model.Count == 0)
+        {
+            <tr><td colspan="8" style="text-align:center;">Không có đơn hàng nào.</td></tr>
+        }
+    </tbody>
+</table>

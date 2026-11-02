@@ -1,0 +1,119 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Đăng ký";
+}
+
+    <div class="container-custom">
+
+        <div class="auth-wrapper">
+
+            <!-- KHỐI FORM ĐĂNG KÝ -->
+            <div class="auth-box">
+
+                <h2>Tạo Tài Khoản Mới</h2>
+
+                <form onsubmit="return validateForm()">
+
+                    <div class="form-group">
+                        <label>Địa chỉ Email *</label>
+
+                        <input type="text" id="username" class="form-control" placeholder="Nhập địa chỉ email....">
+
+                        <span id="username_err" class="error-msg"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mật khẩu *</label>
+
+                        <input type="password" id="password" class="form-control">
+
+                        <span id="password_err" class="error-msg"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Xác nhận mật khẩu *</label>
+
+                        <input type="password" id="repass" class="form-control">
+
+                        <span id="repass_err" class="error-msg"></span>
+                    </div>
+
+                    <button type="submit" class="btn">
+                        Tạo tài khoản
+                    </button>
+
+                </form>
+
+                <p>
+                    Đã có tài khoản?
+                    <a href="/Home/Dangnhap">Đăng nhập</a>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT KIỂM TRA DỮ LIỆU -->
+    <script>
+
+        function validateForm() {
+
+            // Xóa thông báo lỗi cũ
+            document.getElementById("username_err").innerText = "";
+            document.getElementById("password_err").innerText = "";
+            document.getElementById("repass_err").innerText = "";
+
+            // Lấy dữ liệu người dùng nhập
+            var user = document.getElementById("username").value;
+            var pass = document.getElementById("password").value;
+            var repass = document.getElementById("repass").value;
+
+            // Ban đầu cho rằng dữ liệu hợp lệ
+            var isValid = true;
+
+            // Kiểm tra Username
+           
+            var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+        
+
+            if (!emailRegex.test(user)) {
+
+                document.getElementById("username_err").innerText =
+                    "Tên Email phải đúng định dạng!";
+
+                isValid = false;
+            }
+
+            // Kiểm tra độ dài mật khẩu
+            if (pass.length < 8) {
+
+                document.getElementById("password_err").innerText =
+                    "Mật khẩu hệ thống yêu cầu chứa tối thiểu 8 ký tự!";
+
+                isValid = false;
+            }
+
+            // Kiểm tra mật khẩu nhập lại
+            if (pass !== repass) {
+
+                document.getElementById("repass_err").innerText =
+                    "Mật khẩu xác nhận gõ lại chưa trùng khớp!";
+
+                isValid = false;
+            }
+
+            // Nếu tất cả đều đúng
+            if (isValid) {
+
+                alert(
+                    "Hệ thống chấp nhận dữ liệu! Đăng ký thành công tài khoản: "
+                    + user
+                );
+            }
+
+            return isValid;
+        }
+
+    </script>

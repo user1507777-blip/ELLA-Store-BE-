@@ -1,0 +1,78 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Chi tiết đơn hàng";
+}
+
+    <main class="order-detail-container">
+        <h2 id="order-title">CHI TIẾT ĐƠN HÀNG</h2>
+
+        <div class="order-box">
+            <h3>Thông Tin Khách Hàng</h3>
+            <p><strong>Người nhận:</strong> <span id="ten-khach">--</span></p>
+            <p><strong>Số điện thoại:</strong> <span id="sdt-khach">--</span></p>
+            <p><strong>Địa chỉ:</strong> <span id="diachi-khach">--</span></p>
+            <p><strong>Trạng thái:</strong> <span class="status-badge" id="trang-thai">--</span></p>
+        </div>
+
+        <h3>Sản Phẩm Đã Đặt</h3>
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Đơn giá</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody id="bang-san-pham">
+            </tbody>
+        </table>
+
+        <div class="summary-box">
+            <p>Tiền hàng: <span id="tien-hang">0đ</span></p>
+            <p>Phí vận chuyển: <span>30.000đ</span></p>
+            <p class="total-price">Tổng thanh toán: <span id="tong-tien">0đ</span></p>
+        </div>
+
+        <div class="back-link">
+            <a href="/Home/Lichsumuahang">&larr; Quay lại Lịch sử mua hàng</a>
+        </div>
+    </div>
+    <script>
+        window.onload = function() {
+            var maDon = localStorage.getItem('maDonDangXem') || 'ELLA1001';
+            var donMoi = JSON.parse(localStorage.getItem('donHangCuaKhach'));
+
+            // Xử lý dữ liệu hiển thị theo mã đơn
+            if (donMoi && (maDon === donMoi.maDon)) {
+                hienThiChiTiet(donMoi.maDon, donMoi.ten, donMoi.sdt, donMoi.diachi, donMoi.trangThai || "Đã giao", donMoi.tenGiay, donMoi.gia);
+            } else if (maDon === 'ELLA1002') {
+                hienThiChiTiet('ELLA1002', 'Nguyễn Văn B', '0988 765 432', '456 Lê Đại Hành, Quận 11, TP.HCM', 'Đang vận chuyển', 'Giày Asics Gel-Kayano', 1520000);
+            } else {
+                // Mặc định đơn ELLA1001
+                hienThiChiTiet('ELLA1001', 'Khách nhi', '0907 754 094', '141 Lũy Bán Bích, Q.Tân Phú, TP.HCM', 'Đã giao', 'Giày Adidas Superstar', 2100000);
+            }
+        };
+
+        function hienThiChiTiet(ma, ten, sdt, diachi, trangthai, tengiay, gia) {
+            document.getElementById('order-title').innerText = "CHI TIẾT ĐƠN HÀNG #" + ma;
+            document.getElementById('ten-khach').innerText = ten;
+            document.getElementById('sdt-khach').innerText = sdt;
+            document.getElementById('diachi-khach').innerText = diachi;
+            document.getElementById('trang-thai').innerText = trangthai;
+
+            var tienHang = parseInt(gia);
+            var tongTien = tienHang + 30000;
+
+            document.getElementById('bang-san-pham').innerHTML = `
+                <tr>
+                    <td>${tengiay}</td>
+                    <td>${tienHang.toLocaleString('vi-VN')}đ</td>
+                    <td>1</td>
+                    <td>${tienHang.toLocaleString('vi-VN')}đ</td>
+                </tr>
+            `;
+            document.getElementById('tien-hang').innerText = tienHang.toLocaleString('vi-VN') + 'đ';
+            document.getElementById('tong-tien').innerText = tongTien.toLocaleString('vi-VN') + 'đ';
+        }
+    </script>

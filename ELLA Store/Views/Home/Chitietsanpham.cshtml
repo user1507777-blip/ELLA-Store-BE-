@@ -1,0 +1,245 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Chi tiết sản phẩm";
+}
+
+<!-- CHI TIẾT SẢN PHẨM -->
+<div class="container-custom" style="max-width: 1200px; margin: 20px auto; padding: 0 15px;">
+    <div style="display: flex; gap: 40px; background: #fff; border: 1px solid #ddd; border-radius: 20px; padding: 28px; align-items: flex-start;">
+
+        <!-- === KHU VỰC ẢNH VÀ THUMBNAIL === -->
+        <div style="width: 450px; flex-shrink: 0;">
+
+            <!-- Khung ảnh chính to có 2 nút lướt bám sát hai mép -->
+            <div style="position: relative; width: 100%; height: 450px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+
+                <!-- Nút trái -->
+                <button type="button" onclick="changeImageSlider(-1)" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); z-index: 10; background: rgba(255,255,255,0.9); border: 1px solid #ccc; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">&lt;</button>
+
+                <!-- Ảnh chính -->
+                <img id="mainProductImage" src="" alt="Giày" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+
+                <!-- Nút phải -->
+                <button type="button" onclick="changeImageSlider(1)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); z-index: 10; background: rgba(255,255,255,0.9); border: 1px solid #ccc; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">&gt;</button>
+            </div>
+
+            <!-- Thanh Thumbnail ở dưới -->
+            <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
+                <button type="button" onclick="scrollThumbnails(-1)" style="background: #fff; border: 1px solid #ccc; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: bold; flex-shrink: 0;">&lt;</button>
+
+                <div id="thumbnailContainer" style="display: flex; gap: 8px; overflow-x: auto; scroll-behavior: smooth; width: 100%; padding: 2px;">
+                    <!-- Ảnh phụ tự động sinh ra ở đây -->
+                </div>
+
+                <button type="button" onclick="scrollThumbnails(1)" style="background: #fff; border: 1px solid #ccc; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: bold; flex-shrink: 0;">&gt;</button>
+            </div>
+        </div>
+
+        <!-- THÔNG TIN SẢN PHẨM -->
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 16px;">
+            <h2 class="shoe-name" style="font-size: 28px; font-weight: 800; margin: 0;">Nike Air Force 1 All White</h2>
+            <div class="shoe-price" style="font-size: 24px; color: #b91c1c; font-weight: 800;">2.500.000đ</div>
+            <div id="stockInfo" style="font-size: 14px; font-weight: 600;"></div>
+            <p style="color: #666; line-height: 1.6; margin: 0;">Dòng giày quốc dân với thiết kế da trắng cao cấp, bền bỉ và cực kỳ dễ phối đồ.</p>
+
+            <!-- SIZE EU -->
+            <div>
+                <h4 style="margin: 0 0 8px; font-size: 13px; text-transform: uppercase; color: #64748b;">Chọn Kích Cỡ (Size EU):</h4>
+                <div style="display: flex; gap: 10px;">
+                    <div class="size-box" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700;">39</div>
+                    <div class="size-box active" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700; background: #334155; color: #fff;">40</div>
+                    <div class="size-box" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700;">41</div>
+                    <div class="size-box" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700;">42</div>
+                </div>
+            </div>
+
+            <!-- SIZE US -->
+            <div>
+                <h4 style="margin: 0 0 8px; font-size: 13px; text-transform: uppercase; color: #64748b;">Chọn Kích Cỡ (Size US):</h4>
+                <div style="display: flex; gap: 10px;">
+                    <div class="size-box" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700;">7</div>
+                    <div class="size-box active" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700; background: #334155; color: #fff;">8</div>
+                    <div class="size-box" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700;">9</div>
+                    <div class="size-box" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700;">10</div>
+                </div>
+            </div>
+
+            <!-- NÚT THÊM GIỎ -->
+            <button id="btnThemGio" onclick="themVaoGio()" style="width: 250px; background: #333; color: #fff; border: 0; border-radius: 12px; padding: 12px 20px; font-weight: 700; cursor: pointer; text-align: center;">Thêm vào giỏ hàng</button>
+        </div>
+    </div>
+</div>
+
+<!-- SẢN PHẨM CÙNG THƯƠNG HIỆU -->
+<div class="related-products" style="width: 100%; max-width: 1200px; margin: 40px auto; padding: 0 15px; box-sizing: border-box;">
+
+    <h2 style="font-size: 26px; font-weight: 800; margin-bottom: 20px;">
+        Sản phẩm cùng thương hiệu
+    </h2>
+
+    <div id="relatedProductList"
+         class="related-product-grid"
+         style="display: grid !important; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; width: 100%;">
+
+    </div>
+</div>
+
+<script>
+    let thamSo = new URLSearchParams(window.location.search);
+    let idSanPham = thamSo.get("id");
+
+    // Danh sách sản phẩm lấy từ CSDL (bảng Product) do HomeController.ChiTietSanPham nạp vào ViewBag.SanPhamJson
+    let danhSachSanPham = @Html.Raw((string)ViewBag.SanPhamJson ?? "[]");
+
+    let sanPhamDangXem = danhSachSanPham.find(p => p.id === idSanPham) || danhSachSanPham[0];
+
+    // Không có sản phẩm nào trong CSDL
+    if (!sanPhamDangXem) {
+        document.querySelector(".shoe-name").innerText = "Không tìm thấy sản phẩm";
+        document.querySelector(".shoe-price").innerText = "";
+        document.getElementById("btnThemGio").style.display = "none";
+        document.getElementById("stockInfo").innerText = "";
+    }
+
+    // Hiển thị sản phẩm cùng thương hiệu
+    function showRelatedProducts() {
+        if (!sanPhamDangXem) return;
+        let thuongHieu = sanPhamDangXem.brand;
+
+        // Lọc sản phẩm cùng hãng, không lấy sản phẩm đang xem
+        let sanPhamCungHang = danhSachSanPham.filter(p =>
+            p.brand === thuongHieu &&
+            p.id !== sanPhamDangXem.id
+        );
+
+        // Trộn ngẫu nhiên danh sách sản phẩm
+        sanPhamCungHang.sort(() => Math.random() - 0.5);
+
+        // Chỉ lấy tối đa 5 sản phẩm
+        let sanPhamNgauNhien = sanPhamCungHang.slice(0, 5);
+
+        let html = "";
+
+        sanPhamNgauNhien.forEach(sp => {
+            html += `
+            <a href="/Home/Chitietsanpham?id=${sp.id}"
+            class="related-product-card"
+            style="display: block; width: 100%; min-width: 0; background: white; border: 1px solid #ddd; border-radius: 10px; overflow: hidden; text-decoration: none; color: #222;">
+
+            <img src="${sp.image}"
+             alt="${sp.name}"
+             onerror="this.src='/Content/image/no-image.png'"
+             style="display: block; width: 100%; height: 170px; object-fit: contain; padding: 10px; box-sizing: border-box; background: #f8f8f8;">
+
+            <div class="related-info" style="padding: 12px;">
+
+                <h3 style="font-size: 14px; font-weight: 700; line-height: 1.5; height: 42px; overflow: hidden; margin: 0 0 10px;">
+                    ${sp.name}
+                </h3>
+
+                <div class="related-price" style="color: #b91c1c; font-size: 16px; font-weight: 800;">
+                    ${sp.price.toLocaleString("vi-VN")}đ
+                </div>
+
+            </div>
+            </a>
+        `;
+        });
+
+        document.getElementById("relatedProductList").innerHTML = html;
+    }
+
+    // Gọi hàm hiển thị
+    showRelatedProducts();
+
+    if (sanPhamDangXem) {
+        let mainImgPath = sanPhamDangXem.image;
+        document.getElementById("mainProductImage").src = mainImgPath;
+        document.querySelector(".shoe-name").innerText = sanPhamDangXem.name;
+        document.querySelector(".shoe-price").innerText = sanPhamDangXem.price.toLocaleString("vi-VN") + "đ";
+
+        // Tồn kho từ CSDL: hết hàng thì khóa nút thêm giỏ
+        let info = document.getElementById("stockInfo");
+        let btn = document.getElementById("btnThemGio");
+        if (sanPhamDangXem.stock > 0) {
+            info.innerText = "Còn " + sanPhamDangXem.stock + " sản phẩm";
+            info.style.color = "#16a34a";
+        } else {
+            info.innerText = "Hết hàng";
+            info.style.color = "#dc2626";
+            btn.disabled = true;
+            btn.innerText = "Hết hàng";
+            btn.style.background = "#94a3b8";
+            btn.style.cursor = "not-allowed";
+        }
+
+        let lastDot = mainImgPath.lastIndexOf('.');
+        if (lastDot > 0) {
+            let basePath = mainImgPath.substring(0, lastDot);
+            let thumbContainer = document.getElementById("thumbnailContainer");
+
+            let htmlThumbnails = `<img src="${mainImgPath}" onclick="changeMainImage(this)" style="width: 75px; height: 75px; object-fit: cover; cursor: pointer; border: 2px solid #333; border-radius: 6px; flex-shrink: 0;" class="active" />`;
+
+            [".1", ".2", ".3"].forEach(idx => {
+                htmlThumbnails += `<img src="${basePath + idx}.jpg" data-base="${basePath}" data-index="${idx}" onerror="tryNextExtension(this)" onclick="changeMainImage(this)" style="width: 75px; height: 75px; object-fit: cover; cursor: pointer; border: 2px solid #ddd; border-radius: 6px; flex-shrink: 0;" />`;
+            });
+            thumbContainer.innerHTML = htmlThumbnails;
+        }
+    }
+
+    function tryNextExtension(img) {
+        let exts = [".jpg", ".webp", ".png", ".avif", ".jpeg"];
+        let cur = exts.findIndex(e => img.src.endsWith(e));
+        if (cur !== -1 && cur < exts.length - 1) {
+            img.src = img.getAttribute("data-base") + img.getAttribute("data-index") + exts[cur + 1];
+        } else {
+            img.style.display = 'none';
+        }
+    }
+
+    function changeMainImage(el) {
+        document.getElementById('mainProductImage').src = el.src;
+        document.querySelectorAll('#thumbnailContainer img').forEach(i => {
+            i.style.borderColor = '#ddd';
+            i.classList.remove('active');
+        });
+        el.style.borderColor = '#333';
+        el.classList.add('active');
+    }
+
+    function changeImageSlider(dir) {
+        let imgs = Array.from(document.querySelectorAll('#thumbnailContainer img')).filter(i => i.style.display !== 'none');
+        if (imgs.length === 0) return;
+        let idx = imgs.findIndex(i => i.classList.contains('active'));
+        if (idx === -1) idx = 0;
+        let next = idx + dir;
+        if (next >= imgs.length) next = 0;
+        if (next < 0) next = imgs.length - 1;
+        changeMainImage(imgs[next]);
+    }
+
+    function scrollThumbnails(dir) {
+        document.getElementById('thumbnailContainer').scrollLeft += dir * 100;
+    }
+
+    function selectSize(el) {
+        document.querySelectorAll('.size-box').forEach(b => {
+            b.classList.remove('active');
+            b.style.background = '#fff';
+            b.style.color = '#000';
+        });
+        el.classList.add('active');
+        el.style.background = '#334155';
+        el.style.color = '#fff';
+    }
+
+    function themVaoGio() {
+        if (!sanPhamDangXem || sanPhamDangXem.stock <= 0) return;
+        let activeSize = document.querySelector('.size-box.active')?.innerText || "40";
+        let gioHang = JSON.parse(localStorage.getItem("cart")) || [];
+        gioHang.push({ id: sanPhamDangXem.id, name: sanPhamDangXem.name, price: sanPhamDangXem.price, image: sanPhamDangXem.image, size: activeSize, quantity: 1 });
+        localStorage.setItem("cart", JSON.stringify(gioHang));
+        alert("Đã thêm sản phẩm vào giỏ hàng!");
+        window.location.href = "/Home/GioHang";
+    }
+</script>

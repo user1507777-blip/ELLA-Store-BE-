@@ -1,0 +1,35 @@
+﻿@model List<ELLA_Store.Models.Product>
+<table class="order-table">
+    <thead>
+        <tr><th>ID</th><th>Ảnh</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Tồn kho</th><th>Nhập / xuất kho</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.ProductID</td>
+                <td><img class="admin-thumb" src="@Url.Content("~/Content/image/" + p.ImagePro)" alt="@p.NamePro"></td>
+                <td>@p.NamePro</td>
+                <td>@p.CategoryName</td>
+                <td>
+                    @if (p.Stock < 5)
+                    {<span class="st st-cho">@p.Stock (sắp hết)</span> }
+                else
+                { <span class="st st-xong">@p.Stock</span>}
+                </td>
+                <td>
+                    <form method="post" action="/Admin/DieuChinhKho" class="admin-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@p.ProductID">
+                        <input type="number" name="soLuong" required class="quantity-input" placeholder="+/-" title="Số dương = nhập kho, số âm = xuất kho">
+                        <button type="submit">Lưu</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        @if (Model.Count == 0)
+        {
+            <tr><td colspan="6" style="text-align:center;">Không có hàng tồn.</td></tr>
+        }
+    </tbody>
+</table>

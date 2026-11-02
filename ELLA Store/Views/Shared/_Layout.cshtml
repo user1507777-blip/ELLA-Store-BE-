@@ -1,0 +1,146 @@
+﻿@* Layout dùng chung cho toàn bộ ELLA Store: topbar + header + aside danh mục + nội dung + footer. *@
+@{
+    var action = (ViewContext.RouteData.Values["action"] ?? "Index").ToString().ToLower();
+    Func<string, string> act = (name) => action == name.ToLower() ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - ELLA Store</title>
+    <link href="@Url.Content("~/Content/css/style.css")" rel="stylesheet" />
+</head>
+<body>
+
+    <header class="store-header">
+        <div class="container header-inner">
+            <a class="brand" href="/Home/Index">ELLA<span>STORE</span></a>
+
+            <!-- Thanh tìm kiếm -->
+            <form class="search-box" method="get" action="/Home/TimKiem">
+                <input type="text" id="timKiem" name="keyword" value="@Request.QueryString["keyword"]" placeholder="Tìm kiếm sản phẩm...">
+                <button type="submit">Tìm</button>
+            </form>
+
+            <nav class="store-nav">
+                <a href="/Home/Index">Trang chủ</a>
+                <a href="/Home/Lichsumuahang">Lịch sử mua hàng</a>
+                @if ((string)Session["Role"] == "Admin")
+                {
+                    <a href="/Admin/SanPham">Quản trị</a>
+                }
+                @if (Session["UserID"] != null)
+                {
+                    <a href="/Home/TaiKhoan">Xin chào, @Session["FullName"]</a>
+                    <a href="/Home/DangXuat">Đăng xuất</a>
+                }
+                else
+                {
+                    <a href="/Home/Dangnhap">Đăng nhập</a>
+                }
+                <a href="/Home/Giohang" class="cart">
+                    <img src="~/Content/image/cart.jpg" class="cart-icon" alt="Giỏ hàng">
+                    <span class="cart-count" id="cartCount"></span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container main-content">
+        <div class="store-shell">
+
+            <!-- ASIDE DANH MỤC -->
+            <aside class="category-panel" id="categories">
+                <h3>Danh mục</h3>
+                <ul class="category-list">
+                    <li><a href="/Home/Index" class="@act("Index")">Trang chủ</a></li>
+                </ul>
+                <div class="category-group">Hãng giày</div>
+                <ul class="category-list">
+                    <li><a href="/Home/Nike" class="@act("Nike")">Nike</a></li>
+                    <li><a href="/Home/Adidas" class="@act("Adidas")">Adidas</a></li>
+                    <li><a href="/Home/Biti" class="@act("Biti")">Biti's</a></li>
+                    <li><a href="/Home/Asics" class="@act("Asics")">Asics</a></li>
+                    <li><a href="/Home/Puma" class="@act("Puma")">Puma</a></li>
+                </ul>
+                <div class="category-group">Tài khoản</div>
+                <ul class="category-list">
+                    @if (Session["UserID"] != null)
+                    {
+                        <li><a href="/Home/TaiKhoan" class="@act("TaiKhoan")">Thông tin tài khoản</a></li>
+                        <li><a href="/Home/DoiMatKhau" class="@act("DoiMatKhau")">Đổi mật khẩu</a></li>
+                        <li><a href="/Home/DangXuat">Đăng xuất</a></li>
+                    }
+                    else
+                    {
+                        <li><a href="/Home/Dangnhap" class="@act("Dangnhap")">Đăng nhập</a></li>
+                        <li><a href="/Home/Dangky" class="@act("Dangky")">Đăng ký</a></li>
+                    }
+                    <li><a href="/Home/Giohang" class="@act("Giohang")">Giỏ hàng</a></li>
+                    <li><a href="/Home/Lichsumuahang" class="@act("Lichsumuahang")">Lịch sử mua hàng</a></li>
+                </ul>
+                @if ((string)Session["Role"] == "Admin")
+                {
+                    <div class="category-group">Quản trị</div>
+                    <ul class="category-list">
+                        <li><a href="/Admin/SanPham" class="@act("SanPham")">Quản lý kho hàng</a></li>
+                        <li><a href="/Admin/NguoiDung" class="@act("NguoiDung")">Quản lý người dùng</a></li>
+                    </ul>
+                }
+                <div class="category-note">
+                    <strong>Vận động mỗi ngày</strong>
+                    <p>Chọn đôi giày phù hợp để mỗi bước chân thêm tự tin.</p>
+                </div>
+            </aside>
+
+            <!-- NỘI DUNG TỪNG TRANG -->
+            <section class="store-content">
+                @RenderBody()
+            </section>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="store-footer">
+        <div class="container footer-content">
+            <div class="footer-section">
+                <h3>VỀ ELLA STORE</h3>
+                <p>Hệ thống thời trang giày dép uy tín, chất lượng hàng đầu.</p>
+                <p>Địa chỉ: 123 Đường ABC, TP.HCM</p>
+                <p>Hotline: 0123 456 789</p>
+            </div>
+            <div class="footer-section">
+                <h3>HỖ TRỢ KHÁCH HÀNG</h3>
+                <p><a href="#">Hướng dẫn mua hàng</a></p>
+                <p><a href="#">Chính sách đổi trả</a></p>
+                <p><a href="#">Chính sách bảo mật</a></p>
+                <p><a href="#">Phương thức thanh toán</a></p>
+            </div>
+            <div class="footer-section">
+                <h3>CHÍNH SÁCH</h3>
+                <p><a href="#">Chính sách vận chuyển</a></p>
+                <p><a href="#">Chính sách kiểm hàng</a></p>
+                <p><a href="#">Quy định chung</a></p>
+            </div>
+            <div class="footer-section">
+                <h3>KẾT NỐI VỚI CHÚNG TÔI</h3>
+                <p><a href="#">Facebook</a> | <a href="#">Instagram</a></p>
+                <p><a href="#">TikTok</a> | <a href="#">Shopee</a></p>
+                <h3 class="footer-sub">ĐĂNG KÝ NHẬN TIN</h3>
+                <p class="footer-muted">Nhận mã giảm giá và sản phẩm mới sớm nhất.</p>
+            </div>
+        </div>
+        <div class="container footer-copy">&copy; 2026 ELLA Store. All rights reserved.</div>
+    </footer>
+
+    <script>
+        /* SỐ LƯỢNG TRÊN BIỂU TƯỢNG GIỎ HÀNG */
+        try {
+            var gio = JSON.parse(localStorage.getItem("cart")) || [];
+            var tong = gio.reduce(function (s, sp) { return s + (Number(sp.quantity) || 0); }, 0);
+            if (tong > 0) document.getElementById("cartCount").innerText = tong;
+        } catch (e) { }
+    </script>
+</body>
+</html>

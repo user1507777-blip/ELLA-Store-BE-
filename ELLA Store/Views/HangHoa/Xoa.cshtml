@@ -1,0 +1,36 @@
+﻿@model ELLA_Store.Models.Product
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Xóa hàng hóa";
+}
+
+<div class="container-custom">
+    <div class="auth-wrapper">
+        <div class="auth-box">
+            <h2>Xóa hàng hóa</h2>
+            <img class="admin-thumb" src="@Url.Content("~/Content/image/" + Model.ImagePro)" alt="@Model.NamePro">
+            <dl class="admin-kv">
+                <dt>Tên</dt><dd>@Model.NamePro</dd>
+                <dt>Danh mục</dt><dd>@Model.CategoryName</dd>
+                <dt>Giá</dt><dd>@Model.Price.ToString("#,##0")đ</dd>
+                <dt>Tồn kho</dt><dd>@Model.Stock</dd>
+            </dl>
+
+            @if ((bool)ViewBag.DaBan)
+            {
+                <p class="admin-warn">Không thể xóa vì hàng hóa này đã phát sinh trong đơn hàng.</p>
+            }
+            else
+            {
+                <p class="error-msg">Bạn chắc chắn muốn xóa? Thao tác này không thể hoàn tác.</p>
+                using (Html.BeginForm("Xoa", "HangHoa", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.ProductID">
+                    <button type="submit" class="btn" style="background:#b91c1c;">Xác nhận xóa</button>
+                }
+            }
+            <p><a href="/HangHoa">&larr; Quay lại danh sách</a></p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,53 @@
+﻿@model IEnumerable<ELLA_Store.Models.Category>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Quản lý danh mục";
+}
+@{ var dem = (Dictionary<int, int>)ViewBag.SoSanPham; }
+
+<div class="container-custom">
+    <h2>Quản Lý Danh Mục</h2>
+
+    @if (TempData["ThongBao"] != null)
+    {<p class="success-msg">@TempData["ThongBao"]</p>}
+    @if (TempData["Loi"] != null)
+    {<p class="error-msg">@TempData["Loi"]</p>}
+
+    <!-- Nút thêm danh mục có style trực tiếp để ép hiển thị chuẩn nút bấm -->
+    <div class="admin-toolbar" style="margin-bottom: 16px;">
+        <a href="/DanhMuc/Them" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: #334155; color: #ffffff !important; border: 1px solid #334155; border-radius: 10px; text-decoration: none !important; font-size: 14px; font-weight: 700; box-shadow: 0 4px 10px rgba(51, 65, 85, 0.2);" onmouseover="this.style.background='#1e293b'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#334155'; this.style.transform='translateY(0)';">
+            + Thêm danh mục
+        </a>
+    </div>
+
+    <table class="order-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên danh mục</th>
+                <th>Mô tả</th>
+                <th>Số hàng hóa</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td>@c.CategoryID</td>
+                    <td>@c.CategoryName</td>
+                    <td>@c.Description</td>
+                    <td>@dem[c.CategoryID]</td>
+                    <td>
+                        <a href="/DanhMuc/Sua/@c.CategoryID" class="btn-edit">Sửa</a>
+                        <a href="/DanhMuc/Xoa/@c.CategoryID" class="btn-delete">Xóa</a>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="5" style="text-align:center;">Chưa có danh mục nào.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

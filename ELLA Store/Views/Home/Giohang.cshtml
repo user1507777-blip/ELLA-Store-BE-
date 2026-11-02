@@ -1,0 +1,237 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Giỏ hàng";
+}
+
+    <div class="container-custom" style="padding-top: 30px;">
+
+        <h2>Giỏ Hàng Của Bạn</h2>
+
+        <table class="cart-table" style="margin-top: 20px;">
+
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Size</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Tổng cộng</th>
+                    <th>Xóa</th>
+                </tr>
+            </thead>
+
+            <!-- JavaScript tự đưa sản phẩm vào đây -->
+            <tbody id="gioHang"></tbody>
+
+        </table>
+
+        <!-- TỔNG TIỀN -->
+
+        <div class="cart-summary">
+
+            <div class="summary-box">
+
+                <div class="summary-row">
+
+                    <span>Thành tiền:</span>
+
+                    <span style="font-size: 20px; color: red;">
+
+                        <span id="thanhTien">0</span>đ
+
+                    </span>
+
+                </div>
+
+                <!-- Sang trang đặt hàng -->
+
+                <a href="/Home/Dathang"
+                   class="btn"
+                   style="display: block; text-align: center;">
+
+                    Thanh toán
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        // ==========================================
+        // LẤY GIỎ HÀNG
+        // ==========================================
+
+        let gioHang =
+            JSON.parse(localStorage.getItem("cart")) || [];
+
+        let danhSach =
+            document.getElementById("gioHang");
+
+        let tongTien = 0;
+
+        // ==========================================
+        // HIỂN THỊ SẢN PHẨM
+        // ==========================================
+
+        gioHang.forEach(function (sanPham, index) {
+
+            // Tính tiền của sản phẩm
+            let tongSanPham =
+                sanPham.price * sanPham.quantity;
+
+            // Cộng vào tổng
+            tongTien += tongSanPham;
+
+            // Tạo dòng sản phẩm
+            let dong =
+                document.createElement("tr");
+
+            dong.innerHTML = `
+
+                <td>
+
+                    <div class="cart-item-info">
+
+                        <img
+                            src="${sanPham.image}"
+                            alt="${sanPham.name}"
+                        >
+
+                        <div>
+
+                            <strong>
+                                ${sanPham.name}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+                <td>
+                    ${sanPham.size}
+                </td>
+
+                <td>
+                    ${sanPham.price.toLocaleString("vi-VN")}đ
+                </td>
+
+                <td>
+
+                    <input
+                        type="number"
+                        value="${sanPham.quantity}"
+                        min="1"
+                        class="quantity-input"
+                        onchange="doiSoLuong(${index}, this.value)"
+                    >
+
+                </td>
+
+                <td>
+                    ${tongSanPham.toLocaleString("vi-VN")}đ
+                </td>
+
+                <td>
+
+                 <button onclick="xoaSanPham(${index})">
+                   Xóa
+                 </button>
+
+                </td>
+            `;
+
+            danhSach.appendChild(dong);
+
+        });
+
+        // ==========================================
+        // HIỂN THỊ TỔNG TIỀN
+        // ==========================================
+
+        document.getElementById("thanhTien").innerText =
+            tongTien.toLocaleString("vi-VN");
+
+        // ==========================================
+        // LƯU TỔNG TIỀN
+        // Để trang bill dùng lại
+        // ==========================================
+
+        localStorage.setItem(
+            "cartTotal",
+            tongTien
+        );
+
+        // ==========================================
+        // ĐỔI SỐ LƯỢNG
+        // ==========================================
+
+        function doiSoLuong(index, soLuongMoi) {
+
+            soLuongMoi = Number(soLuongMoi);
+
+            if (soLuongMoi < 1) {
+
+                soLuongMoi = 1;
+
+            }
+
+            // Cập nhật số lượng
+            gioHang[index].quantity =
+                soLuongMoi;
+
+            // Lưu lại
+            localStorage.setItem(
+                "cart",
+                JSON.stringify(gioHang)
+            );
+
+            // Cập nhật lại trang
+            location.reload();
+
+        }
+        function xoaSanPham(index) {
+
+            // Xóa đúng sản phẩm được chọn
+            gioHang.splice(index, 1);
+
+            // Lưu lại giỏ hàng
+            localStorage.setItem(
+                "cart",
+                JSON.stringify(gioHang)
+            );
+
+            // Hiển thị lại giỏ hàng
+            hienThiGioHang();
+
+        }
+
+    </script>
+
+    <!-- //-- Đoạn mã xử lý tính toán tiền động bằng JavaScript từ Video 4 của cô giáo Tú Bùi -->
+    <script>
+        //--// Hàm xử lý lấy giá trị theo ID và ép kiểu dữ liệu chuẩn theo phút 11:34 và 12:23 trong video
+        function tinhTien() {
+            //--// Đột nhập giao diện, tìm ID='donGia', lấy chữ bên trong rồi dùng parseFloat đổi sang kiểu số thực để tính toán
+            var gia = parseFloat(document.getElementById("donGia").innerText);
+            //--// Tìm ID='soLuong', bốc lấy giá trị khách đang điền trong ô nhập (.value)
+            var luong = parseFloat(document.getElementById("soLuong").value);
+
+            //--// Xử lý phòng hờ trường hợp người dùng lỡ tay xóa trống trơn ô nhập khiến biến bị rỗng (NaN)
+            if (isNaN(luong) || luong < 0) {
+                luong = 0; //--// Nếu trống hoặc nhập bậy bạ, ta ép số lượng về bằng 0 để tránh lỗi toán học
+            }
+
+            //--// Áp dụng công thức tính tiền cơ bản của cô giáo dạy: Thành tiền = Đơn giá x Số lượng
+            var ketQua = gia * luong;
+
+            //--// Đẩy con số kết quả vừa tính toán được xuất ngược trả lại vùng hiển thị HTML dựa theo mã ID
+            document.getElementById("tongSanPham").innerText = ketQua;
+            document.getElementById("thanhTien").innerText = ketQua;
+        }
+    </script>

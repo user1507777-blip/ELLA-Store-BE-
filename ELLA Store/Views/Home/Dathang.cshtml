@@ -1,0 +1,63 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Đặt hàng";
+}
+    <!-- Form nhập thông tin khách hàng -->
+    <div class="checkout-container">
+        <h2 class="checkout-title">Thông Tin Nhận Hàng</h2>
+        <!-- Hiển thị tổng tiền lấy từ giỏ hàng -->
+        <div class="bill-summary">
+            <span>Thành tiền cần thanh toán:</span>
+            <strong style="color: #e74c3c; font-size: 20px;"><span id="tongTienBill">0</span>đ</strong>
+        </div>
+        <!-- Nhập họ tên -->
+        <div class="form-group">
+            <label>Họ và tên khách hàng *</label>
+            <input type="text" id="txtHoTen" placeholder="Nhập đầy đủ họ và tên người nhận">
+        </div>
+        <!-- Nhập số điện thoại -->
+        <div class="form-group">
+            <label>Số điện thoại nhận hàng *</label>
+            <input type="text" id="txtSoDienThoai" placeholder="Nhập số điện thoại liên hệ">
+        </div>
+        <!-- Nhập email -->
+        <div class="form-group">
+            <label>Địa chỉ Email</label>
+            <input type="email" id="txtEmail" placeholder="Nhập địa chỉ email (không bắt buộc)">
+        </div>
+        <!-- Nhập địa chỉ -->
+        <div class="form-group">
+            <label>Địa chỉ giao hàng *</label>
+            <input type="text" id="txtDiaChi" placeholder="Số nhà, tên đường, phường/xã, quận/huyện">
+        </div>
+        <!-- Nút xác nhận đặt hàng -->
+        <button type="button" class="btn-order" onclick="xuLyGoiDonHangDat()">
+            Xác Nhận Đặt Hàng & Thanh Toán
+        </button>
+    </div>
+    <script>
+        // Lấy tổng tiền từ giỏ hàng
+        const tongTienHienTai = parseFloat(localStorage.getItem("cartTotal")) || 0;
+        // Hiển thị tổng tiền
+        document.getElementById("tongTienBill").innerText = tongTienHienTai.toLocaleString("vi-VN");
+        // Hàm xử lý khi người dùng bấm xác nhận đặt hàng
+        function xuLyGoiDonHangDat() {
+            // Lấy thông tin người dùng nhập
+            const hoten = document.getElementById("txtHoTen").value.trim();
+            const sdt = document.getElementById("txtSoDienThoai").value.trim();
+            const email = document.getElementById("txtEmail").value.trim();
+            const diachi = document.getElementById("txtDiaChi").value.trim();
+            // Kiểm tra thông tin bắt buộc
+            if (!hoten || !sdt || !diachi) {
+                alert("Vui lòng điền đầy đủ các thông tin bắt buộc có dấu (*)!");
+                return;
+            }
+            // Lưu thông tin để bill.html lấy lại
+            localStorage.setItem("hoTen", hoten);
+            localStorage.setItem("soDienThoai", sdt);
+            localStorage.setItem("email", email);
+            localStorage.setItem("diaChi", diachi);
+            // Chuyển sang trang bill
+            window.location.href = "/Home/Bill";
+        }
+    </script>

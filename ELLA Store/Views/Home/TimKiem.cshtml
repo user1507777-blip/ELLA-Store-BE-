@@ -1,0 +1,12 @@
+﻿@model ELLA_Store.Models.PagedProductsViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Tìm kiếm sản phẩm";
+}
+
+    <div class="container-custom">
+        <div class="section-title">
+            @(string.IsNullOrWhiteSpace(Model.SearchTerm) ? "Tất cả sản phẩm" : "Kết quả cho “" + Model.SearchTerm + "”") (@Model.TotalItems)
+        </div>
+        @Html.Partial("_DanhSachSanPham", Model)
+    </div>

@@ -1,0 +1,52 @@
+﻿@model ELLA_Store.Models.AdminCreateViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Thêm quản trị viên";
+}
+
+<div class="container-custom">
+    <div class="auth-wrapper">
+        <div class="auth-box">
+            <h2>Thêm quản trị viên</h2>
+
+            @using (Html.BeginForm("ThemQuanTri", "Admin", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    <label>Tên đăng nhập *</label>
+                    <input type="text" name="Username" value="@Model.Username" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("Username")</span>
+                </div>
+                <div class="form-group">
+                    <label>Họ và tên *</label>
+                    <input type="text" name="FullName" value="@Model.FullName" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("FullName")</span>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="text" name="Email" value="@Model.Email" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("Email")</span>
+                </div>
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="text" name="Phone" value="@Model.Phone" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("Phone")</span>
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu *</label>
+                    <input type="password" name="Password" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("Password")</span>
+                </div>
+                <div class="form-group">
+                    <label>Nhập lại mật khẩu *</label>
+                    <input type="password" name="ConfirmPassword" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("ConfirmPassword")</span>
+                </div>
+
+                <button type="submit" class="btn">Thêm quản trị viên</button>
+            }
+            <p><a href="/Admin/NguoiDung">&larr; Quay lại danh sách</a></p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,143 @@
+﻿@model ELLA_Store.Models.Order
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Chi tiết đơn hàng #" + Model.OrderID;
+    var tiepTheo = ELLA_Store.Models.OrderStatus.NextOf(Model.Status);
+    bool coVoucher = Session["DiscountAmount"] != null;
+    decimal giamGia = coVoucher ? (decimal)Session["DiscountAmount"] : 0m;
+    decimal sauGiam = Model.TotalPrice - giamGia;
+    if (sauGiam < 0) { sauGiam = 0; }
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<div style="padding: 24px; background-color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif;">
+
+    @if (TempData["ThongBao"] != null)
+    {<p class="success-msg">@TempData["ThongBao"]</p>}
+    @if (TempData["Loi"] != null)
+    {<p class="error-msg">@TempData["Loi"]</p>}
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 16px;">
+        <div>
+            <h2 style="font-size: 22px; font-weight: 700; color: #0f172a; margin: 0;">
+                Đơn hàng #@Model.OrderID <span class="st @ELLA_Store.Models.OrderStatus.CssClass(Model.Status)" style="margin-left: 8px;">@Model.Status</span>
+            </h2>
+            <span style="font-size: 13px; color: #94a3b8; display: block; margin-top: 4px;">
+                <i class="fa-regular fa-calendar" style="margin-right: 4px;"></i> Ngày đặt: @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+            </span>
+        </div>
+        <a href="/DonHang" style="padding: 8px 16px; background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; color: #334155; font-size: 13px; font-weight: 600; text-decoration: none;">
+            <i class="fa-solid fa-arrow-left" style="margin-right: 6px;"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 24px;">
+        <!-- CỘT TRẠNG THÁI & GIÁ TRỊ -->
+        <div style="flex: 1; min-width: 300px;">
+            <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.01);">
+                <h5 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-top: 0; margin-bottom: 16px;">
+                    <i class="fa-solid fa-circle-info" style="color: #475569; margin-right: 6px;"></i> Trạng thái & Giá trị
+                </h5>
+                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 14px;">
+                    <div>
+                        <small style="color: #94a3b8; display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;">Trạng thái hiện tại</small>
+                        <span style="color: #2563eb; font-weight: 600;">@Model.Status</span>
+                    </div>
+                    <div>
+                        <small style="color: #94a3b8; display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;">Tạm tính / Phí vận chuyển</small>
+                        <span style="color: #334155;">@Model.SubTotal.ToString("#,##0")đ &nbsp;+&nbsp; @Model.ShippingFee.ToString("#,##0")đ</span>
+                    </div>
+                    <div>
+                        <small style="color: #94a3b8; display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;">Tổng giá trị hóa đơn</small>
+                        <span style="color: #0f172a; font-weight: 700; font-size: 16px;">@Model.TotalPrice.ToString("#,##0")đ</span>
+                    </div>
+                    @if (coVoucher)
+                    {
+                        <div>
+                            <small style="color: #94a3b8; display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;">Giảm giá (Mã: @Session["VoucherCode"])</small>
+                            <span style="color: #dc2626; font-weight: 600;">-@giamGia.ToString("#,##0")đ</span>
+                        </div>
+                        <div>
+                            <small style="color: #94a3b8; display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;">Thành tiền sau giảm</small>
+                            <span style="color: #16a34a; font-weight: 700; font-size: 16px;">@sauGiam.ToString("#,##0")đ</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT NGƯỜI NHẬN & THANH TOÁN -->
+        <div style="flex: 1; min-width: 300px;">
+            <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.01);">
+                <h5 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-top: 0; margin-bottom: 16px;">
+                    <i class="fa-solid fa-credit-card" style="color: #475569; margin-right: 6px;"></i> Vận chuyển & Thanh toán
+                </h5>
+                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 14px;">
+                    <div>
+                        <small style="color: #94a3b8; display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;">Phương thức thanh toán</small>
+                        <span style="display: inline-block; padding: 2px 8px; background-color: #f1f5f9; border-radius: 4px; color: #0f172a; font-weight: 600; font-size: 12px;">@Model.PaymentMethod</span>
+                    </div>
+                    <div>
+                        <small style="color: #94a3b8; display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;">Người nhận</small>
+                        <span style="color: #334155;">@Model.Receiver &ndash; @Model.Phone</span>
+                    </div>
+                    <div>
+                        <small style="color: #94a3b8; display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;">Email</small>
+                        <span style="color: #334155;">@(string.IsNullOrEmpty(Model.Email) ? "—" : Model.Email)</span>
+                    </div>
+                    <div>
+                        <small style="color: #94a3b8; display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;">Địa chỉ giao hàng</small>
+                        <span style="color: #334155;"><i class="fa-solid fa-box" style="margin-right: 4px;"></i> @Model.Address</span>
+                    </div>
+                    <div>
+                        <small style="color: #94a3b8; display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;">Tài khoản</small>
+                        <span style="color: #334155;">@(Model.CustomerID.HasValue ? "Mã khách hàng " + Model.CustomerID.Value : "Khách vãng lai")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SẢN PHẨM TRONG ĐƠN (partial dùng chung) -->
+    <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.01); margin-bottom: 24px;">
+        <h5 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-top: 0; margin-bottom: 16px;">
+            <i class="fa-solid fa-shoe-prints" style="color: #475569; margin-right: 6px;"></i> Sản phẩm trong đơn
+        </h5>
+        @Html.Partial("_DanhSachChiTiet", Model)
+    </div>
+
+    <!-- KHU VỰC CẬP NHẬT TRẠNG THÁI CHO ADMIN -->
+    <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.01);">
+        <h5 style="font-size: 14px; font-weight: 700; color: #0f172a; margin-top: 0; margin-bottom: 14px;">
+            <i class="fa-solid fa-sliders" style="margin-right: 6px; color:#64748b;"></i> Xử lý đơn hàng
+        </h5>
+        @if (tiepTheo.Length > 0)
+        {
+            <div style="display:flex; gap:10px; flex-wrap: wrap;">
+                @foreach (var st in tiepTheo)
+                {
+                    bool huy = st == ELLA_Store.Models.OrderStatus.DaHuy;
+                    string icon = huy ? "fa-regular fa-circle-xmark" : (st == ELLA_Store.Models.OrderStatus.DangGiao ? "fa-solid fa-truck" : "fa-solid fa-check");
+                    string kieu = huy
+                        ? "padding: 8px 18px; background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;"
+                        : "padding: 8px 18px; background-color: #2563eb; color: #ffffff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;";
+                    <form method="post" action="/DonHang/DoiTrangThai" style="margin:0;"
+                          @Html.Raw(huy ? "onsubmit=\"return confirm('Hủy đơn này? Tồn kho sẽ được hoàn lại.');\"" : "")>
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.OrderID" />
+                        <input type="hidden" name="trangThaiMoi" value="@st" />
+                        <button type="submit" style="@kieu">
+                            <i class="@icon" style="margin-right: 6px;"></i> @(huy ? "Hủy đơn hàng" : "Chuyển sang \"" + st + "\"")
+                        </button>
+                    </form>
+                }
+            </div>
+        }
+        else
+        {
+            <p style="color:#64748b; margin:0;">Đơn đã ở trạng thái cuối, không thể thay đổi.</p>
+        }
+    </div>
+
+</div>

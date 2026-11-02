@@ -1,0 +1,546 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.5.2\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.5.2\build\EntityFramework.props')" />
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D1E37556-9F66-445E-8B73-17E88E74A828}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ELLA_Store</RootNamespace>
+    <AssemblyName>ELLA Store</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort>44309</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.5.2\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.5.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.2.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.9.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.9\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.9\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\DanhMucController.cs" />
+    <Compile Include="Controllers\DonHangController.cs" />
+    <Compile Include="Controllers\HangHoaController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\KhachHangController.cs" />
+    <Compile Include="Data\Category.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Customer.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Model1.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model1.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Model1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Model1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model1.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Order.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\OrderDetail.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Product.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\User.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Filters\AdminRequiredAttribute.cs" />
+    <Compile Include="Filters\LoginRequiredAttribute.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\PasswordHasher.cs" />
+    <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AdminViewModels.cs" />
+    <Compile Include="Models\Category.cs" />
+    <Compile Include="Models\CategoryStore.cs" />
+    <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\CustomerAdminViewModels.cs" />
+    <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\OrderStore.cs" />
+    <Compile Include="Models\PagedProductsViewModel.cs" />
+    <Compile Include="Models\Product.cs" />
+    <Compile Include="Models\ProductStore.cs" />
+    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserStore.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\css\admin.css" />
+    <Content Include="Content\css\style.css" />
+    <Content Include="Content\image\Adidas Superstar.jpg" />
+    <Content Include="Content\image\adidas2.jpg" />
+    <Content Include="Content\image\adidas4.1.jpg" />
+    <Content Include="Content\image\adidas4.2.jpg" />
+    <Content Include="Content\image\adidas4.3.jpg" />
+    <Content Include="Content\image\adidas5.jpg" />
+    <Content Include="Content\image\adidas6.jpg" />
+    <Content Include="Content\image\adidas9.png" />
+    <Content Include="Content\image\anh1.jpg" />
+    <Content Include="Content\image\asic3.2.png" />
+    <Content Include="Content\image\asic4.jpg" />
+    <Content Include="Content\image\asics2.1.jpg" />
+    <Content Include="Content\image\asics2.2.jpg" />
+    <Content Include="Content\image\asics2.3.jpg" />
+    <Content Include="Content\image\asics2.jpg" />
+    <Content Include="Content\image\asics6.1.png" />
+    <Content Include="Content\image\asics6.2.png" />
+    <Content Include="Content\image\asics6.3.png" />
+    <Content Include="Content\image\asics6.png" />
+    <Content Include="Content\image\banner1.jpg" />
+    <Content Include="Content\image\banner2.jpeg" />
+    <Content Include="Content\image\banner3.jpg" />
+    <Content Include="Content\image\biti11.jpg" />
+    <Content Include="Content\image\biti12.png" />
+    <Content Include="Content\image\biti13.jpg" />
+    <Content Include="Content\image\biti14.jpg" />
+    <Content Include="Content\image\biti3.1.jpg" />
+    <Content Include="Content\image\biti6.1.png" />
+    <Content Include="Content\image\biti6.2.png" />
+    <Content Include="Content\image\biti6.3.png" />
+    <Content Include="Content\image\biti6.png" />
+    <Content Include="Content\image\biti7.jpg" />
+    <Content Include="Content\image\biti9.jpg" />
+    <Content Include="Content\image\cart.jpg" />
+    <Content Include="Content\image\giay1.jpg" />
+    <Content Include="Content\image\images.jpg" />
+    <Content Include="Content\image\nike3.1.png" />
+    <Content Include="Content\image\nike3.2.png" />
+    <Content Include="Content\image\nike3.3.png" />
+    <Content Include="Content\image\nike7.1.jpg" />
+    <Content Include="Content\image\nike7.2.jpg" />
+    <Content Include="Content\image\nike7.3.jpg" />
+    <Content Include="Content\image\nike9.1.jpg" />
+    <Content Include="Content\image\puma1.jpg" />
+    <Content Include="Content\image\puma5.jpg" />
+    <Content Include="Content\image\puma8.1.jpg" />
+    <Content Include="Content\image\puma8.2.jpg" />
+    <Content Include="Content\image\puma8.3.jpg" />
+    <Content Include="Content\image\puma8.jpg" />
+    <Content Include="Content\image\puma9.1.jpg" />
+    <Content Include="Data\Model1.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Model1.edmx</DependentUpon>
+      <LastGenOutput>Model1.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Data\Model1.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Model1.edmx</DependentUpon>
+      <LastGenOutput>Model1.cs</LastGenOutput>
+    </Content>
+    <Content Include="favicon.ico" />
+    <Content Include="Global.asax" />
+    <Content Include="Scripts\bootstrap.bundle.js" />
+    <Content Include="Scripts\bootstrap.bundle.min.js" />
+    <Content Include="Scripts\bootstrap.esm.js" />
+    <Content Include="Scripts\bootstrap.esm.min.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Content\image\9.webp" />
+    <Content Include="Content\image\adida1.webp" />
+    <Content Include="Content\image\adidas3.avif" />
+    <Content Include="Content\image\adidas4.webp" />
+    <Content Include="Content\image\adidas7.webp" />
+    <Content Include="Content\image\adidas8.avif" />
+    <Content Include="Content\image\asic3.webp" />
+    <Content Include="Content\image\asics1.webp" />
+    <Content Include="Content\image\asics5.webp" />
+    <Content Include="Content\image\asics7.webp" />
+    <Content Include="Content\image\biti1.webp" />
+    <Content Include="Content\image\biti10.webp" />
+    <Content Include="Content\image\biti2.webp" />
+    <Content Include="Content\image\biti3.webp" />
+    <Content Include="Content\image\biti4.webp" />
+    <Content Include="Content\image\biti5.webp" />
+    <Content Include="Content\image\biti8.webp" />
+    <Content Include="Content\image\index-9-1568244048.avif" />
+    <Content Include="Content\image\nike1.webp" />
+    <Content Include="Content\image\nike2.webp" />
+    <Content Include="Content\image\nike3.avif" />
+    <Content Include="Content\image\nike4.webp" />
+    <Content Include="Content\image\nike5.avif" />
+    <Content Include="Content\image\nike6.webp" />
+    <Content Include="Content\image\nike7.webp" />
+    <Content Include="Content\image\nike8.webp" />
+    <Content Include="Content\image\nike9.webp" />
+    <Content Include="Content\image\puma.avif" />
+    <Content Include="Content\image\puma10.webp" />
+    <Content Include="Content\image\puma2.avif" />
+    <Content Include="Content\image\puma3.avif" />
+    <Content Include="Content\image\puma4.avif" />
+    <Content Include="Content\image\puma6.avif" />
+    <Content Include="Content\image\puma7.webp" />
+    <Content Include="Content\image\SNEAKER_GUIDE_OPENER.webp" />
+    <EntityDeploy Include="Data\Model1.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Model1.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Data\Model1.edmx.diagram">
+      <DependentUpon>Model1.edmx</DependentUpon>
+    </Content>
+    <Content Include="Content\image\adida1.1.webp" />
+    <Content Include="Content\image\adida1.2.webp" />
+    <Content Include="Content\image\adida1.3.webp" />
+    <Content Include="Content\image\adida3.1.avif" />
+    <Content Include="Content\image\adida3.2.avif" />
+    <Content Include="Content\image\adida3.3.avif" />
+    <Content Include="Content\image\Adidas Superstar.1.avif" />
+    <Content Include="Content\image\Adidas Superstar.2.avif" />
+    <Content Include="Content\image\Adidas Superstar.3.avif" />
+    <Content Include="Content\image\adidas2.1.avif" />
+    <Content Include="Content\image\adidas2.2.avif" />
+    <Content Include="Content\image\adidas2.3.avif" />
+    <Content Include="Content\image\adidas5.1.avif" />
+    <Content Include="Content\image\adidas5.2.avif" />
+    <Content Include="Content\image\adidas5.3.avif" />
+    <Content Include="Content\image\adidas6.1.webp" />
+    <Content Include="Content\image\adidas6.2.webp" />
+    <Content Include="Content\image\adidas6.3.webp" />
+    <Content Include="Content\image\adidas7.1.avif" />
+    <Content Include="Content\image\adidas7.2.avif" />
+    <Content Include="Content\image\adidas7.3.avif" />
+    <Content Include="Content\image\adidas8.1.avif" />
+    <Content Include="Content\image\adidas8.2.avif" />
+    <Content Include="Content\image\adidas8.3.avif" />
+    <Content Include="Content\image\adidas9.1.avif" />
+    <Content Include="Content\image\adidas9.2.avif" />
+    <Content Include="Content\image\adidas9.3.avif" />
+    <Content Include="Content\image\asic3.1.webp" />
+    <Content Include="Content\image\asic3.3.webp" />
+    <Content Include="Content\image\asic4.1.webp" />
+    <Content Include="Content\image\asic4.2.webp" />
+    <Content Include="Content\image\asics1.1.webp" />
+    <Content Include="Content\image\asics2.2.webp" />
+    <Content Include="Content\image\asics3.3.webp" />
+    <Content Include="Content\image\asics5.1.webp" />
+    <Content Include="Content\image\asics5.2.webp" />
+    <Content Include="Content\image\asics5.3.webp" />
+    <Content Include="Content\image\asics7.1.webp" />
+    <Content Include="Content\image\asics7.2.webp" />
+    <Content Include="Content\image\biti1.1.webp" />
+    <Content Include="Content\image\biti1.2.webp" />
+    <Content Include="Content\image\biti1.3.webp" />
+    <Content Include="Content\image\biti10.1.webp" />
+    <Content Include="Content\image\biti10.2.webp" />
+    <Content Include="Content\image\biti10.3.webp" />
+    <Content Include="Content\image\biti11.1.webp" />
+    <Content Include="Content\image\biti11.2.webp" />
+    <Content Include="Content\image\biti11.3.webp" />
+    <Content Include="Content\image\biti12.1.webp" />
+    <Content Include="Content\image\biti12.2.webp" />
+    <Content Include="Content\image\biti13.1.webp" />
+    <Content Include="Content\image\biti13.2.webp" />
+    <Content Include="Content\image\biti13.3.webp" />
+    <Content Include="Content\image\biti14.1.webp" />
+    <Content Include="Content\image\biti14.2.webp" />
+    <Content Include="Content\image\biti14.3.webp" />
+    <Content Include="Content\image\biti2.1.webp" />
+    <Content Include="Content\image\biti2.2.webp" />
+    <Content Include="Content\image\biti2.3.webp" />
+    <Content Include="Content\image\biti3.2.webp" />
+    <Content Include="Content\image\biti3.3.webp" />
+    <Content Include="Content\image\biti4.1.webp" />
+    <Content Include="Content\image\biti4.2.webp" />
+    <Content Include="Content\image\biti4.3.webp" />
+    <Content Include="Content\image\biti5.1.webp" />
+    <Content Include="Content\image\biti5.2.webp" />
+    <Content Include="Content\image\biti5.3.webp" />
+    <Content Include="Content\image\biti7.1.webp" />
+    <Content Include="Content\image\biti7.2.webp" />
+    <Content Include="Content\image\biti8.1.webp" />
+    <Content Include="Content\image\biti8.2.webp" />
+    <Content Include="Content\image\biti8.3.webp" />
+    <Content Include="Content\image\biti9.1.webp" />
+    <Content Include="Content\image\biti9.2.webp" />
+    <Content Include="Content\image\biti9.3.webp" />
+    <Content Include="Content\image\nike1.1.webp" />
+    <Content Include="Content\image\nike1.2.webp" />
+    <Content Include="Content\image\nike1.3.webp" />
+    <Content Include="Content\image\nike2.1.webp" />
+    <Content Include="Content\image\nike2.2.webp" />
+    <Content Include="Content\image\nike2.3.webp" />
+    <Content Include="Content\image\nike4.1.webp" />
+    <Content Include="Content\image\nike4.2.webp" />
+    <Content Include="Content\image\nike4.3.webp" />
+    <Content Include="Content\image\nike5.1.webp" />
+    <Content Include="Content\image\nike5.2.webp" />
+    <Content Include="Content\image\nike5.3.webp" />
+    <Content Include="Content\image\nike6.1.webp" />
+    <Content Include="Content\image\nike6.2.webp" />
+    <Content Include="Content\image\nike6.3.webp" />
+    <Content Include="Content\image\nike8.1.webp" />
+    <Content Include="Content\image\nike8.2.webp" />
+    <Content Include="Content\image\nike8.3.webp" />
+    <Content Include="Content\image\nike9.2.webp" />
+    <Content Include="Content\image\nike9.3.webp" />
+    <Content Include="Content\image\puma1.1.webp" />
+    <Content Include="Content\image\puma1.2.webp" />
+    <Content Include="Content\image\puma1.3.webp" />
+    <Content Include="Content\image\puma10.1.webp" />
+    <Content Include="Content\image\puma10.2.webp" />
+    <Content Include="Content\image\puma10.3.webp" />
+    <Content Include="Content\image\puma2.1.avif" />
+    <Content Include="Content\image\puma2.2.avif" />
+    <Content Include="Content\image\puma2.3.avif" />
+    <Content Include="Content\image\puma3.1.avif" />
+    <Content Include="Content\image\puma3.2.avif" />
+    <Content Include="Content\image\puma3.3.avif" />
+    <Content Include="Content\image\puma4.1.webp" />
+    <Content Include="Content\image\puma4.2.webp" />
+    <Content Include="Content\image\puma4.3.webp" />
+    <Content Include="Content\image\puma5.1.avif" />
+    <Content Include="Content\image\puma5.2.avif" />
+    <Content Include="Content\image\puma5.3.avif" />
+    <Content Include="Content\image\puma6.1.avif" />
+    <Content Include="Content\image\puma6.2.avif" />
+    <Content Include="Content\image\puma6.3.avif" />
+    <Content Include="Content\image\puma7.1.webp" />
+    <Content Include="Content\image\puma7.2.webp" />
+    <Content Include="Content\image\puma7.3.webp" />
+    <Content Include="Content\image\puma9.2.webp" />
+    <Content Include="Content\image\puma9.3.webp" />
+    <None Include="Scripts\jquery-3.7.0.intellisense.js" />
+    <Content Include="Scripts\jquery-3.7.0.js" />
+    <Content Include="Scripts\jquery-3.7.0.min.js" />
+    <Content Include="Scripts\jquery-3.7.0.slim.js" />
+    <Content Include="Scripts\jquery-3.7.0.slim.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\Adidas.cshtml" />
+    <Content Include="Views\Home\Dangnhap.cshtml" />
+    <Content Include="Views\Home\Dangky.cshtml" />
+    <Content Include="Views\Home\Asics.cshtml" />
+    <Content Include="Views\Home\Chitietsanpham.cshtml" />
+    <Content Include="Views\Home\Bill.cshtml" />
+    <Content Include="Views\Home\Biti.cshtml" />
+    <Content Include="Views\Home\Giohang.cshtml" />
+    <Content Include="Views\Home\Chitietmuahang.cshtml" />
+    <Content Include="Views\Home\Dathang.cshtml" />
+    <Content Include="Views\Home\Lichsumuahang.cshtml" />
+    <Content Include="Views\Home\Nike.cshtml" />
+    <Content Include="Views\Home\Puma.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\_AdminLayout.cshtml" />
+    <Content Include="Views\DanhMuc\Form.cshtml" />
+    <Content Include="Views\DanhMuc\Index.cshtml" />
+    <Content Include="Views\DanhMuc\Xoa.cshtml" />
+    <Content Include="Views\HangHoa\Form.cshtml" />
+    <Content Include="Views\HangHoa\Index.cshtml" />
+    <Content Include="Views\HangHoa\Xoa.cshtml" />
+    <Content Include="Views\HangHoa\ChiTiet.cshtml" />
+    <Content Include="Views\Shared\_ChiTietSanPham.cshtml" />
+    <Content Include="Views\KhachHang\ChiTiet.cshtml" />
+    <Content Include="Views\KhachHang\Index.cshtml" />
+    <Content Include="Views\Admin\NguoiDung.cshtml" />
+    <Content Include="Views\Admin\SanPham.cshtml" />
+    <Content Include="Views\Admin\SuaQuanTri.cshtml" />
+    <Content Include="Views\Admin\ThemQuanTri.cshtml" />
+    <Content Include="Views\Admin\_CanNhap.cshtml" />
+    <Content Include="Views\Admin\_HangTon.cshtml" />
+    <Content Include="Views\DonHang\ChiTiet.cshtml" />
+    <Content Include="Views\DonHang\Index.cshtml" />
+    <Content Include="Views\DonHang\_DanhSachChiTiet.cshtml" />
+    <Content Include="Views\DonHang\_DanhSachDon.cshtml" />
+    <Content Include="Views\KhachHang\_ChiTiet.cshtml" />
+    <Content Include="Views\Home\TimKiem.cshtml" />
+    <Content Include="Views\Shared\_DanhSachSanPham.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <Content Include="Scripts\bootstrap.min.js.map" />
+    <Content Include="Scripts\bootstrap.js.map" />
+    <Content Include="Scripts\bootstrap.esm.min.js.map" />
+    <Content Include="Scripts\bootstrap.esm.js.map" />
+    <Content Include="Scripts\bootstrap.bundle.min.js.map" />
+    <Content Include="Scripts\bootstrap.bundle.js.map" />
+    <Content Include="Scripts\jquery-3.7.0.slim.min.map" />
+    <Content Include="Scripts\jquery-3.7.0.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>53404</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>https://localhost:44309/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.5.2\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.2\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.5.2\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.2\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.5.2\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.5.2\build\EntityFramework.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

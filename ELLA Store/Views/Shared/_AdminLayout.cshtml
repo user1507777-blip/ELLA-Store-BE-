@@ -1,0 +1,57 @@
+﻿@* Layout riêng cho khu quản trị: khác hẳn giao diện cửa hàng. *@
+@{
+    var action = (ViewContext.RouteData.Values["action"] ?? "").ToString().ToLower();
+    var ctrl = (ViewContext.RouteData.Values["controller"] ?? "").ToString().ToLower();
+    Func<string, string> act = (name) => (ctrl == "admin" && action == name.ToLower()) ? "active" : "";
+    Func<string, string> onCtrl = (name) => ctrl == name.ToLower() ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - ELLA Admin</title>
+    <link href="@Url.Content("~/Content/css/style.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/css/admin.css")" rel="stylesheet" />
+</head>
+<body class="admin-body">
+
+    <header class="admin-topbar">
+        <a class="admin-brand" href="/Admin/SanPham">ELLA<span>ADMIN</span></a>
+        <div class="admin-user">
+            Xin chào, <strong>@Session["FullName"]</strong>
+            <a href="/Home/Index">Xem cửa hàng</a>
+            <a href="/Home/DangXuat">Đăng xuất</a>
+        </div>
+    </header>
+
+    <div class="admin-shell">
+        <aside class="admin-side">
+            <div class="admin-side-title">Quản trị</div>
+            <details class="admin-group" @(ctrl == "danhmuc" ? "open" : "")>
+                <summary class="@onCtrl("DanhMuc")">🗂️ Quản lý danh mục</summary>
+                <div class="admin-sub">
+                    <a href="/DanhMuc" class="@(ctrl == "danhmuc" && action != "them" ? "active" : "")">Danh sách danh mục</a>
+                    <a href="/DanhMuc/Them" class="@(ctrl == "danhmuc" && action == "them" ? "active" : "")">Thêm danh mục</a>
+                </div>
+            </details>
+            <details class="admin-group" @(ctrl == "hanghoa" ? "open" : "")>
+                <summary class="@onCtrl("HangHoa")">👟 Quản lý hàng hóa</summary>
+                <div class="admin-sub">
+                    <a href="/HangHoa" class="@(ctrl == "hanghoa" && action != "them" ? "active" : "")">Danh sách hàng hóa</a>
+                    <a href="/HangHoa/Them" class="@(ctrl == "hanghoa" && action == "them" ? "active" : "")">Thêm hàng hóa</a>
+                </div>
+            </details>
+            <a href="/Admin/SanPham" class="@act("SanPham")">📦 Quản lý kho hàng</a>
+            <a href="/DonHang" class="@onCtrl("DonHang")">🧾 Quản lý đơn hàng</a>
+            <a href="/KhachHang" class="@onCtrl("KhachHang")">🙋 Quản lý khách hàng</a>
+            <a href="/Admin/NguoiDung" class="@act("NguoiDung") @act("ThemQuanTri") @act("SuaQuanTri")">👤 Quản lý người dùng</a>
+        </aside>
+
+        <main class="admin-main">
+            @RenderBody()
+        </main>
+    </div>
+
+</body>
+</html>

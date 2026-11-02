@@ -1,0 +1,202 @@
+﻿@model ELLA_Store.Models.CustomerRowViewModel
+@{
+    var donHang = (System.Collections.Generic.List<ELLA_Store.Models.Order>)ViewBag.DonHang;
+}
+
+<div style="background: #ffffff;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            padding: 4px 0;">
+
+    <!-- TIÊU ĐỀ KHUNG CHI TIẾT -->
+    <h4 style="font-size: 18px;
+                font-weight: 700;
+                color: #0f172a;
+                margin-top: 0;
+                margin-bottom: 24px;
+                padding-bottom: 12px;
+                border-bottom: 2px solid #f1f5f9;">
+        Thông tin khách hàng chi tiết: @Model.FullName
+    </h4>
+
+    <!-- GRID Ô THÔNG TIN KHÁCH HÀNG CHIA ĐỀU THEO HÀNG NGANG -->
+    <div style="display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 16px;
+                margin-bottom: 16px;">
+
+        <div style="padding: 14px;
+                    background-color: #f8fafc;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;">
+            <small style="color: #94a3b8;
+                        display: block;
+                        font-size: 11px;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        margin-bottom: 4px;">Tên đăng nhập</small>
+            <span style="font-size: 14px; font-weight: 600; color: #0f172a;">@Model.Username</span>
+        </div>
+
+        <div style="padding: 14px;
+                    background-color: #f8fafc;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;">
+            <small style="color: #94a3b8;
+                        display: block;
+                        font-size: 11px;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        margin-bottom: 4px;">Số điện thoại</small>
+            <span style="font-size: 14px; font-weight: 500; color: #334155;">@Model.Phone</span>
+        </div>
+
+        <div style="padding: 14px;
+                    background-color: #f8fafc;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;">
+            <small style="color: #94a3b8;
+                        display: block;
+                        font-size: 11px;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        margin-bottom: 4px;">Địa chỉ Email</small>
+            <span style="font-size: 14px; font-weight: 500; color: #334155;">@(string.IsNullOrEmpty(Model.Email) ? "—" : Model.Email)</span>
+        </div>
+
+        <div style="padding: 14px;
+                    background-color: #f8fafc;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;">
+            <small style="color: #94a3b8;
+                        display: block;
+                        font-size: 11px;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        margin-bottom: 4px;">Ngày tạo tài khoản</small>
+            <span style="font-size: 14px; font-weight: 500; color: #334155;">@Model.CreatedAt.ToString("dd/MM/yyyy")</span>
+        </div>
+    </div>
+
+    <!-- Ô ĐỊA CHỈ VÀ TRẠNG THÁI RỘNG -->
+    <div style="display: flex;
+                flex-wrap: wrap;
+                gap: 16px;
+                margin-bottom: 32px;">
+
+        <div style="flex: 3;
+                    min-width: 280px;
+                    padding: 14px;
+                    background-color: #f8fafc;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;">
+            <small style="color: #94a3b8;
+                        display: block;
+                        font-size: 11px;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        margin-bottom: 4px;">Địa chỉ giao hàng mặc định</small>
+            <span style="font-size: 14px; font-weight: 500; color: #0f172a;">@Model.Address</span>
+        </div>
+
+        <div style="flex: 1;
+                    min-width: 180px;
+                    padding: 14px;
+                    background-color: #f8fafc;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;">
+            <small style="color: #94a3b8;
+                        display: block;
+                        font-size: 11px;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        margin-bottom: 6px;">Trạng thái hệ thống</small>
+            <div>
+                @if (Model.IsActive)
+                {
+                    <span style="display: inline-block; padding: 4px 12px; font-size: 12px; font-weight: 600; color: #16a34a; background-color: #dcfce7; border-radius: 6px;">Hoạt động</span>
+                }
+                else
+                {
+                    <span style="display: inline-block; padding: 4px 12px; font-size: 12px; font-weight: 600; color: #b91c1c; background-color: #fee2e2; border-radius: 6px;">Đã khóa</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- BẢNG DANH SÁCH ĐƠN HÀNG ĐÃ ĐẶT MUA -->
+    <h5 style="font-size: 15px;
+                font-weight: 700;
+                color: #0f172a;
+                margin-bottom: 16px;">
+        Đơn hàng đã đặt mua (@donHang.Count)
+    </h5>
+
+    @if (donHang.Count == 0)
+    {
+        <div style="text-align: center;
+                    padding: 32px;
+                    background-color: #f8fafc;
+                    border: 1px dashed #cbd5e1;
+                    border-radius: 12px;
+                    color: #64748b;
+                    font-size: 14px;">
+            Khách hàng này hiện chưa thực hiện bất kỳ giao dịch nào.
+        </div>
+    }
+    else
+    {
+        <div style="border: 1px solid #e2e8f0;
+                    border-radius: 12px;
+                    overflow: hidden;">
+            <table style="width: 100%;
+                          border-collapse: collapse;
+                          text-align: left;
+                          font-size: 14px;">
+                <thead style="background-color: #f1f5f9;
+                               border-bottom: 1px solid #e2e8f0;">
+                    <tr>
+                        <th style="padding: 14px 16px; font-weight: 600; color: #475569; width: 140px; text-align: center;">Mã đơn</th>
+                        <th style="padding: 14px 16px; font-weight: 600; color: #475569;">Ngày lập hóa đơn</th>
+                        <th style="padding: 14px 16px; font-weight: 600; color: #475569; text-align: right; width: 200px;">Tổng tiền thanh toán</th>
+                        <th style="padding: 14px 16px; font-weight: 600; color: #475569; text-align: center; width: 180px;">Trạng thái đơn hàng</th>
+                    </tr>
+                </thead>
+                <tbody style="color: #334155;">
+                    @foreach (var o in donHang)
+                    {
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 14px 16px; text-align: center;">
+                                <a href="/DonHang/ChiTiet/@o.OrderID"
+                                   style="color: #2563eb; font-weight: 700; text-decoration: none;">
+                                    #@o.OrderID
+                                </a>
+                            </td>
+                            <td style="padding: 14px 16px; color: #475569;">
+                                @o.CreatedAt.ToString("dd/MM/yyyy")
+                            </td>
+                            <td style="padding: 14px 16px; text-align: right; font-weight: 600; color: #0f172a;">
+                                @o.TotalPrice.ToString("#,##0")đ
+                            </td>
+                            <td style="padding: 14px 16px; text-align: center;">
+                                <span style="display: inline-block;
+                                             padding: 4px 10px;
+                                             font-size: 12px;
+                                             font-weight: 600;
+                                             color: #475569;
+                                             background-color: #f1f5f9;
+                                             border: 1px solid #e2e8f0;
+                                             border-radius: 6px;">
+                                    @o.Status
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+

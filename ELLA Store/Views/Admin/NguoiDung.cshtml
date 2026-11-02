@@ -1,0 +1,55 @@
+﻿@model IEnumerable<ELLA_Store.Models.UserRowViewModel>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Quản lý người dùng";
+}
+
+<div class="container-custom">
+    <h2>Quản Lý Người Dùng (Quản trị viên)</h2>
+
+    @if (TempData["ThongBao"] != null) { <p class="success-msg">@TempData["ThongBao"]</p> }
+    @if (TempData["Loi"] != null) { <p class="error-msg">@TempData["Loi"]</p> }
+
+    <div class="admin-toolbar"><a href="/Admin/ThemQuanTri" class="btn">+ Thêm quản trị viên</a></div>
+
+    <table class="order-table">
+        <thead>
+            <tr>
+                <th>Tên đăng nhập</th>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>SĐT</th>
+                <th>Ngày tạo</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td>@u.Username @(u.IsCurrentUser ? "(bạn)" : "")</td>
+                    <td>@u.FullName</td>
+                    <td>@u.Email</td>
+                    <td>@u.Phone</td>
+                    <td>@u.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        @if (u.IsActive) { <span class="st st-xong">Hoạt động</span> }
+                        else { <span class="st st-huy">Đã khóa</span> }
+                    </td>
+                    <td>
+                        <a href="/Admin/SuaQuanTri/@u.Username">Sửa</a>
+                        @if (!u.IsCurrentUser)
+                        {
+                            <form method="post" action="/Admin/XoaNguoiDung" class="admin-inline" onsubmit="return confirm('Xóa quản trị viên @(u.Username)?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@u.Username">
+                                <button type="submit" style="background:#b91c1c;">Xóa</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

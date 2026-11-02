@@ -1,0 +1,74 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Lịch sử mua hàng";
+}
+
+    <main class="order-detail-container">
+        <h2>LỊCH SỬ MUA HÀNG</h2>
+
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>Mã đơn hàng</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Ngày đặt</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="danh-sach-don-hang">
+                <!-- Javascript sẽ điền dữ liệu vào đây -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        window.onload = function() {
+            var donMoi = JSON.parse(localStorage.getItem('donHangCuaKhach'));
+            var htmlContent = '';
+
+            /*1. Nếu có đơn mới từ trang thanh toán/giỏ hàng*/
+            if (donMoi) {
+                var tongTienMoi = (parseInt(donMoi.gia) || 2100000) + 30000;
+                htmlContent += `
+                    <tr>
+                        <td>#${donMoi.maDon || 'ELLA1001'}</td>
+                        <td>${donMoi.tenGiay || 'Giày Adidas Superstar'}</td>
+                        <td>30/09/2026</td>
+                        <td>${tongTienMoi.toLocaleString('vi-VN')}đ</td>
+                        <td><span style="color: green; font-weight: bold;">${donMoi.trangThai || 'Đã giao'}</span></td>
+                        <td><button onclick="xemChiTiet('${donMoi.maDon || 'ELLA1001'}')">Xem chi tiết</button></td>
+                    </tr>
+                `;
+            }
+
+            /*2. Các đơn hàng mẫu mặc định*/
+            htmlContent += `
+                <tr>
+                    <td>#ELLA1001</td>
+                    <td>Giày Adidas Superstar</td>
+                    <td>30/09/2026</td>
+                    <td>2.130.000đ</td>
+                    <td><span style="color: green; font-weight: bold;">Đã giao</span></td>
+                    <td><button onclick="xemChiTiet('ELLA1001')">Xem chi tiết</button></td>
+                </tr>
+                <tr>
+                    <td>#ELLA1002</td>
+                    <td>Giày Asics Gel-Kayano</td>
+                    <td>28/09/2026</td>
+                    <td>1.550.000đ</td>
+                    <td><span style="color: orange; font-weight: bold;">Đang vận chuyển</span></td>
+                    <td><button onclick="xemChiTiet('ELLA1002')">Xem chi tiết</button></td>
+                </tr>
+            `;
+
+            document.getElementById('danh-sach-don-hang').innerHTML = htmlContent;
+        };
+
+        function xemChiTiet(maDon) {
+            /*Lưu mã đơn được chọn và chuyển sang trang chi tiết*/
+            localStorage.setItem('maDonDangXem', maDon);
+            window.location.href = "/Home/Chitietmuahang";
+        }
+    </script>

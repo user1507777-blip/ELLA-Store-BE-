@@ -1,0 +1,36 @@
+﻿@model ELLA_Store.Models.Category
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = ViewBag.TieuDe;
+    bool isEdit = Model.CategoryID > 0;
+}
+
+<div class="container-custom">
+    <div class="auth-wrapper">
+        <div class="auth-box">
+            <h2>@ViewBag.TieuDe</h2>
+
+            @using (Html.BeginForm(isEdit ? "Sua" : "Them", "DanhMuc", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                if (isEdit) { <input type="hidden" name="CategoryID" value="@Model.CategoryID"> }
+
+                <div class="form-group">
+                    <label>Tên danh mục *</label>
+                    <input type="text" name="CategoryName" value="@Model.CategoryName" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("CategoryName")</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Mô tả</label>
+                    <input type="text" name="Description" value="@Model.Description" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("Description")</span>
+                </div>
+
+                <button type="submit" class="btn">@(isEdit ? "Lưu thay đổi" : "Thêm danh mục")</button>
+            }
+
+            <p><a href="/DanhMuc">&larr; Quay lại danh sách</a></p>
+        </div>
+    </div>
+</div>
