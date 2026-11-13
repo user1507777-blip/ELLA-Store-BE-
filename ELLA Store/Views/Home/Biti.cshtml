@@ -2,9 +2,13 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Biti's";
+    ViewBag.BannerSlogan = "Nâng niu bàn chân Việt";
+    ViewBag.BannerMoTa = "Thương hiệu giày Việt Nam với Hunter nổi tiếng: nhẹ, thoải mái và giá hợp lý.";
+    ViewBag.BannerVideo = "biti.mp4";
 }
 
 <div class="container-custom">
-    <div class="section-title">Biti's</div>
+    @Html.Partial("_BannerHang", Model)
+    <div id="danhSachSanPham" class="section-title">Biti's</div>
     @Html.Partial("_DanhSachSanPham", Model)
 </div>

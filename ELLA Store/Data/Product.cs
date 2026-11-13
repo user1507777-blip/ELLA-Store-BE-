@@ -18,6 +18,8 @@ namespace ELLA_Store.Data
         public Product()
         {
             this.OrderDetail = new HashSet<OrderDetail>();
+            this.ProductSize = new HashSet<ProductSize>();
+            this.StockMovement = new HashSet<StockMovement>();
         }
     
         public int ProductID { get; set; }
@@ -27,9 +29,14 @@ namespace ELLA_Store.Data
         public decimal ProductPrice { get; set; }
         public string ProductImage { get; set; }
         public int ProductStock { get; set; }
+        public int DiscountPercent { get; set; }
     
         public virtual Category Category { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderDetail> OrderDetail { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProductSize> ProductSize { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<StockMovement> StockMovement { get; set; }
     }
 }

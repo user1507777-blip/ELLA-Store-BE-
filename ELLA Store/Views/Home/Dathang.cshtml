@@ -2,62 +2,147 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Đặt hàng";
 }
-    <!-- Form nhập thông tin khách hàng -->
-    <div class="checkout-container">
-        <h2 class="checkout-title">Thông Tin Nhận Hàng</h2>
-        <!-- Hiển thị tổng tiền lấy từ giỏ hàng -->
-        <div class="bill-summary">
-            <span>Thành tiền cần thanh toán:</span>
-            <strong style="color: #e74c3c; font-size: 20px;"><span id="tongTienBill">0</span>đ</strong>
-        </div>
-        <!-- Nhập họ tên -->
-        <div class="form-group">
-            <label>Họ và tên khách hàng *</label>
-            <input type="text" id="txtHoTen" placeholder="Nhập đầy đủ họ và tên người nhận">
-        </div>
-        <!-- Nhập số điện thoại -->
-        <div class="form-group">
-            <label>Số điện thoại nhận hàng *</label>
-            <input type="text" id="txtSoDienThoai" placeholder="Nhập số điện thoại liên hệ">
-        </div>
-        <!-- Nhập email -->
-        <div class="form-group">
-            <label>Địa chỉ Email</label>
-            <input type="email" id="txtEmail" placeholder="Nhập địa chỉ email (không bắt buộc)">
-        </div>
-        <!-- Nhập địa chỉ -->
-        <div class="form-group">
-            <label>Địa chỉ giao hàng *</label>
-            <input type="text" id="txtDiaChi" placeholder="Số nhà, tên đường, phường/xã, quận/huyện">
-        </div>
-        <!-- Nút xác nhận đặt hàng -->
-        <button type="button" class="btn-order" onclick="xuLyGoiDonHangDat()">
-            Xác Nhận Đặt Hàng & Thanh Toán
-        </button>
+<form id="frmToken" style="display:none">@Html.AntiForgeryToken()</form>
+<div class="checkout-container">
+    <h2 class="checkout-title">Thông Tin Nhận Hàng</h2>
+    <div class="bill-summary">
+        <span>Tiền hàng:</span>
+        <strong><span id="tienHang">0</span>đ</strong>
     </div>
-    <script>
-        // Lấy tổng tiền từ giỏ hàng
-        const tongTienHienTai = parseFloat(localStorage.getItem("cartTotal")) || 0;
-        // Hiển thị tổng tiền
-        document.getElementById("tongTienBill").innerText = tongTienHienTai.toLocaleString("vi-VN");
-        // Hàm xử lý khi người dùng bấm xác nhận đặt hàng
-        function xuLyGoiDonHangDat() {
-            // Lấy thông tin người dùng nhập
-            const hoten = document.getElementById("txtHoTen").value.trim();
-            const sdt = document.getElementById("txtSoDienThoai").value.trim();
-            const email = document.getElementById("txtEmail").value.trim();
-            const diachi = document.getElementById("txtDiaChi").value.trim();
-            // Kiểm tra thông tin bắt buộc
-            if (!hoten || !sdt || !diachi) {
-                alert("Vui lòng điền đầy đủ các thông tin bắt buộc có dấu (*)!");
-                return;
-            }
-            // Lưu thông tin để bill.html lấy lại
-            localStorage.setItem("hoTen", hoten);
-            localStorage.setItem("soDienThoai", sdt);
-            localStorage.setItem("email", email);
-            localStorage.setItem("diaChi", diachi);
-            // Chuyển sang trang bill
-            window.location.href = "/Home/Bill";
-        }
-    </script>
+    <div class="bill-summary">
+        <span>Phí vận chuyển (miễn phí từ 1.000.000đ):</span>
+        <strong><span id="phiShip">0</span>đ</strong>
+    </div>
+    <div class="form-group">
+        <div class="fl-nhan" style="display:block;font-size:13px;font-weight:700;color:#334155;margin:0 0 4px;visibility:visible;opacity:1;">Mã giảm giá (không bắt buộc)</div>
+        <div style="display:flex;gap:8px;">
+            <input type="text" id="txtVoucher" maxlength="30" placeholder="Ví dụ: SALE50" style="flex:1;">
+            <button type="button" id="btnVoucher" onclick="apDungVoucher()" style="padding:0 16px;border:0;border-radius:6px;background:#dc2626;color:#fff;cursor:pointer;">Áp dụng</button>
+        </div>
+        <div id="msgVoucher" style="font-size:13px;margin-top:4px;"></div>
+    </div>
+    <div class="bill-summary" id="dongGiam" style="display:none;">
+        <span>Giảm giá (<span id="maGiam"></span>):</span>
+        <strong style="color:#16a34a;">-<span id="tienGiam">0</span>đ</strong>
+    </div>
+    <div class="bill-summary">
+        <span>Thành tiền cần thanh toán:</span>
+        <strong style="color: #e74c3c; font-size: 20px;"><span id="tongTienBill">0</span>đ</strong>
+    </div>
+
+    <div class="form-group">
+        <div class="fl-nhan" style="display:block;font-size:13px;font-weight:700;color:#334155;margin:0 0 4px;visibility:visible;opacity:1;">Họ và tên người nhận *</div>
+        <input type="text" id="txtHoTen" value="@ViewBag.HoTen" maxlength="100" placeholder="Ví dụ: Lê Thị Thu Thảo">
+    </div>
+    <div class="form-group">
+        <div class="fl-nhan" style="display:block;font-size:13px;font-weight:700;color:#334155;margin:0 0 4px;visibility:visible;opacity:1;">Số điện thoại người nhận *</div>
+        <input type="text" id="txtSoDienThoai" value="@ViewBag.Sdt" maxlength="12" placeholder="Ví dụ: 0912345678">
+    </div>
+    <div class="form-group">
+        <div class="fl-nhan" style="display:block;font-size:13px;font-weight:700;color:#334155;margin:0 0 4px;visibility:visible;opacity:1;">Email (không bắt buộc)</div>
+        <input type="email" id="txtEmail" value="@ViewBag.Email" maxlength="100" placeholder="Ví dụ: ten@gmail.com (không bắt buộc)">
+    </div>
+    <div class="form-group">
+        <div class="fl-nhan" style="display:block;font-size:13px;font-weight:700;color:#334155;margin:0 0 4px;visibility:visible;opacity:1;">Địa chỉ giao hàng *</div>
+        <input type="text" id="txtDiaChi" value="@ViewBag.DiaChi" maxlength="200" placeholder="Số nhà, đường, phường/xã, quận/huyện">
+    </div>
+    <div class="form-group">
+        <div class="fl-nhan" style="display:block;font-size:13px;font-weight:700;color:#334155;margin:0 0 4px;visibility:visible;opacity:1;">Phương thức thanh toán *</div>
+        <div class="dh-pt">
+            <div class="dh-the" onclick="chonPT(this)" style="display:flex;gap:10px;align-items:flex-start;border:1px solid #dc2626;border-radius:12px;padding:12px 14px;cursor:pointer;background:#fef2f2;">
+                <input type="radio" name="pt" value="COD" checked style="width:auto;height:auto;margin:4px 0 0;display:inline-block;">
+                <div><div style="font-weight:700;font-size:14px;color:#0f172a;">Thanh toán khi nhận hàng (COD)</div><div style="font-size:12px;color:#64748b;">Trả tiền mặt cho nhân viên giao hàng</div></div>
+            </div>
+            <div class="dh-the" onclick="chonPT(this)" style="display:flex;gap:10px;align-items:flex-start;border:1px solid #cbd5e1;border-radius:12px;padding:12px 14px;cursor:pointer;background:#fff;">
+                <input type="radio" name="pt" value="Chuyển khoản" style="width:auto;height:auto;margin:4px 0 0;display:inline-block;">
+                <div><div style="font-weight:700;font-size:14px;color:#0f172a;">Chuyển khoản trước</div><div style="font-size:12px;color:#64748b;">Đơn được ghi nhận "Đã thanh toán"; nếu hủy đơn sẽ được hoàn tiền</div></div>
+            </div>
+        </div>
+    </div>
+
+    <p id="loiDat" style="color:#b91c1c;font-weight:600"></p>
+    <button type="button" id="btnDat" class="btn-order" onclick="xuLyGoiDonHangDat()">Xác Nhận Đặt Hàng & Thanh Toán</button>
+</div>
+<script>
+    // Chọn thẻ phương thức thanh toán: tick ô tròn và tô viền thẻ đang chọn
+    function chonPT(the) {
+        document.querySelectorAll(".dh-the").forEach(function (t) { t.style.borderColor = "#cbd5e1"; t.style.background = "#fff"; });
+        the.style.borderColor = "#dc2626"; the.style.background = "#fef2f2";
+        the.querySelector("input").checked = true;
+    }
+    var gio = [];
+    try { gio = JSON.parse(localStorage.getItem("cart")) || []; } catch (e) { gio = []; }
+    var tien = gio.reduce(function (t, s) { return t + s.price * s.quantity; }, 0);
+    var ship = 0;
+    document.getElementById("tienHang").innerText = tien.toLocaleString("vi-VN");
+    var giam = 0, maDung = "";
+    function veTong() {
+        // miễn phí ship từ 1.000.000đ, tính sau khi trừ mã giảm giá
+        ship = (tien === 0 || (tien - giam) >= 1000000) ? 0 : 30000;
+        document.getElementById("phiShip").innerText = ship.toLocaleString("vi-VN");
+        document.getElementById("tongTienBill").innerText = Math.max(0, tien - giam + ship).toLocaleString("vi-VN");
+        document.getElementById("dongGiam").style.display = giam > 0 ? "flex" : "none";
+        document.getElementById("maGiam").innerText = maDung;
+        document.getElementById("tienGiam").innerText = giam.toLocaleString("vi-VN");
+    }
+    veTong();
+
+    function apDungVoucher() {
+        var ma = document.getElementById("txtVoucher").value.trim();
+        var msg = document.getElementById("msgVoucher");
+        if (!ma) { giam = 0; maDung = ""; veTong(); msg.style.color = "#b91c1c"; msg.innerText = "Vui lòng nhập mã giảm giá."; return; }
+        var body = new URLSearchParams();
+        body.append("__RequestVerificationToken", document.querySelector("#frmToken input[name=__RequestVerificationToken]").value);
+        body.append("items", JSON.stringify(gio.map(function (s) { return { id: s.id, name: s.name, size: s.size, quantity: s.quantity }; })));
+        body.append("ma", ma);
+        fetch("/Home/KiemTraVoucher", { method: "POST", credentials: "same-origin", body: body })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                if (d.ok) { giam = d.discount; maDung = d.code; msg.style.color = "#16a34a"; }
+                else { giam = 0; maDung = ""; msg.style.color = "#b91c1c"; }
+                msg.innerText = d.message; veTong();
+            })
+            .catch(function () { msg.style.color = "#b91c1c"; msg.innerText = "Không kiểm tra được mã, vui lòng thử lại."; });
+    }
+
+    function xuLyGoiDonHangDat() {
+        var hoten = document.getElementById("txtHoTen").value.trim();
+        var sdt = document.getElementById("txtSoDienThoai").value.trim();
+        var email = document.getElementById("txtEmail").value.trim();
+        var diachi = document.getElementById("txtDiaChi").value.trim();
+        var loi = document.getElementById("loiDat");
+        loi.innerText = "";
+        if (gio.length === 0) { loi.innerText = "Giỏ hàng đang trống."; return; }
+        // Kiểm tra dữ liệu (server cũng kiểm tra lại)
+        var sdtGon = sdt.replace(/\s/g, "");
+        if (!hoten || !sdt || !diachi) { loi.innerText = "Vui lòng điền đầy đủ các thông tin bắt buộc có dấu (*)."; return; }
+        if (hoten.length < 2 || !/^[\p{L}][\p{L}\s'.-]*$/u.test(hoten)) { loi.innerText = "Họ tên chỉ gồm chữ cái, không chứa số hoặc ký tự đặc biệt."; return; }
+        if (!/^(0|\+84)(3|5|7|8|9)\d{8}$/.test(sdtGon)) { loi.innerText = "Số điện thoại không hợp lệ (ví dụ 0912345678)."; return; }
+        if (email && !/^[^@@\s]+@@[^@@\s]+\.[^@@\s]+$/.test(email)) { loi.innerText = "Email không đúng định dạng."; return; }
+        if (diachi.length < 10) { loi.innerText = "Địa chỉ giao hàng quá ngắn (cần số nhà, đường, phường/xã, quận/huyện)."; return; }
+
+        var body = new URLSearchParams();
+        body.append("__RequestVerificationToken", document.querySelector("#frmToken input[name=__RequestVerificationToken]").value);
+        body.append("items", JSON.stringify(gio.map(function (s) { return { id: s.id, name: s.name, size: s.size, quantity: s.quantity }; })));
+        body.append("hoTen", hoten);
+        body.append("sdt", sdt);
+        body.append("email", email);
+        body.append("diaChi", diachi);
+        body.append("phuongThuc", document.querySelector("input[name=pt]:checked").value);
+        body.append("voucherCode", maDung);
+
+        var btn = document.getElementById("btnDat");
+        btn.disabled = true;
+        fetch("/Home/TaoDonHang", { method: "POST", credentials: "same-origin", body: body })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                if (d.needLogin) { window.location.href = "/Home/DangNhap?returnUrl=" + encodeURIComponent("/Home/Dathang"); return; }
+                if (!d.ok) { loi.innerText = d.message; btn.disabled = false; return; }
+                localStorage.setItem("lastOrder", JSON.stringify(d.order));
+                localStorage.removeItem("cart");
+                localStorage.removeItem("cartTotal");
+                window.location.href = "/Home/Bill";
+            })
+            .catch(function () { loi.innerText = "Không gửi được đơn hàng, vui lòng thử lại."; btn.disabled = false; });
+    }
+</script>

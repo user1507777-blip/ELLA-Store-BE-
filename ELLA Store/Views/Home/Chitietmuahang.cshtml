@@ -1,78 +1,75 @@
-﻿@{
+﻿@model ELLA_Store.Models.Order
+@using ELLA_Store.Models
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Chi tiết đơn hàng";
+    ViewBag.TabTaiKhoan = "donhang";
+    string lop = Model.Status == OrderStatus.HoanThanh ? "ok" : Model.Status == OrderStatus.DaHuy ? "bad" : Model.Status == OrderStatus.DangGiao ? "ship" : "wait";
 }
 
-    <main class="order-detail-container">
-        <h2 id="order-title">CHI TIẾT ĐƠN HÀNG</h2>
+<main class="order-detail-container">
+    @Html.Partial("_MenuTaiKhoan")
+    <h2>CHI TIẾT ĐƠN HÀNG #@Model.OrderID</h2>
 
-        <div class="order-box">
-            <h3>Thông Tin Khách Hàng</h3>
-            <p><strong>Người nhận:</strong> <span id="ten-khach">--</span></p>
-            <p><strong>Số điện thoại:</strong> <span id="sdt-khach">--</span></p>
-            <p><strong>Địa chỉ:</strong> <span id="diachi-khach">--</span></p>
-            <p><strong>Trạng thái:</strong> <span class="status-badge" id="trang-thai">--</span></p>
-        </div>
+    @if (TempData["ThongBao"] != null)
+    {<p class="success-msg">@TempData["ThongBao"]</p>}
+    @if (TempData["Loi"] != null)
+    {<p class="error-msg" style="margin-bottom:12px;">@TempData["Loi"]</p>}
 
-        <h3>Sản Phẩm Đã Đặt</h3>
-        <table class="order-table">
-            <thead>
-                <tr>
-                    <th>Sản phẩm</th>
-                    <th>Đơn giá</th>
-                    <th>Số lượng</th>
-                    <th>Thành tiền</th>
-                </tr>
-            </thead>
-            <tbody id="bang-san-pham">
-            </tbody>
-        </table>
-
-        <div class="summary-box">
-            <p>Tiền hàng: <span id="tien-hang">0đ</span></p>
-            <p>Phí vận chuyển: <span>30.000đ</span></p>
-            <p class="total-price">Tổng thanh toán: <span id="tong-tien">0đ</span></p>
-        </div>
-
-        <div class="back-link">
-            <a href="/Home/Lichsumuahang">&larr; Quay lại Lịch sử mua hàng</a>
-        </div>
-    </div>
-    <script>
-        window.onload = function() {
-            var maDon = localStorage.getItem('maDonDangXem') || 'ELLA1001';
-            var donMoi = JSON.parse(localStorage.getItem('donHangCuaKhach'));
-
-            // Xử lý dữ liệu hiển thị theo mã đơn
-            if (donMoi && (maDon === donMoi.maDon)) {
-                hienThiChiTiet(donMoi.maDon, donMoi.ten, donMoi.sdt, donMoi.diachi, donMoi.trangThai || "Đã giao", donMoi.tenGiay, donMoi.gia);
-            } else if (maDon === 'ELLA1002') {
-                hienThiChiTiet('ELLA1002', 'Nguyễn Văn B', '0988 765 432', '456 Lê Đại Hành, Quận 11, TP.HCM', 'Đang vận chuyển', 'Giày Asics Gel-Kayano', 1520000);
-            } else {
-                // Mặc định đơn ELLA1001
-                hienThiChiTiet('ELLA1001', 'Khách nhi', '0907 754 094', '141 Lũy Bán Bích, Q.Tân Phú, TP.HCM', 'Đã giao', 'Giày Adidas Superstar', 2100000);
-            }
-        };
-
-        function hienThiChiTiet(ma, ten, sdt, diachi, trangthai, tengiay, gia) {
-            document.getElementById('order-title').innerText = "CHI TIẾT ĐƠN HÀNG #" + ma;
-            document.getElementById('ten-khach').innerText = ten;
-            document.getElementById('sdt-khach').innerText = sdt;
-            document.getElementById('diachi-khach').innerText = diachi;
-            document.getElementById('trang-thai').innerText = trangthai;
-
-            var tienHang = parseInt(gia);
-            var tongTien = tienHang + 30000;
-
-            document.getElementById('bang-san-pham').innerHTML = `
-                <tr>
-                    <td>${tengiay}</td>
-                    <td>${tienHang.toLocaleString('vi-VN')}đ</td>
-                    <td>1</td>
-                    <td>${tienHang.toLocaleString('vi-VN')}đ</td>
-                </tr>
-            `;
-            document.getElementById('tien-hang').innerText = tienHang.toLocaleString('vi-VN') + 'đ';
-            document.getElementById('tong-tien').innerText = tongTien.toLocaleString('vi-VN') + 'đ';
+    <div class="order-box">
+        <h3>Thông Tin Nhận Hàng</h3>
+        <p><strong>Người nhận:</strong> @Model.Receiver</p>
+        <p><strong>Số điện thoại:</strong> @Model.Phone</p>
+        <p><strong>Địa chỉ:</strong> @Model.Address</p>
+        <p><strong>Ngày đặt:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
+        <p><strong>Trạng thái đơn:</strong> <span class="tt-badge @lop">@Model.Status</span></p>
+        <p><strong>Thanh toán:</strong> @Model.PaymentMethod - @Model.PaymentStatus</p>
+        @if (Model.PaymentStatus == PayStatus.ChoHoanTien)
+        {
+            <p style="color:#92400e;">Đơn đã hủy, cửa hàng sẽ hoàn tiền cho bạn sớm.</p>
         }
-    </script>
+    </div>
+
+    <h3>Sản Phẩm Đã Đặt</h3>
+    <table class="order-table">
+        <thead>
+            <tr><th>Sản phẩm</th><th>Size</th><th>Đơn giá</th><th>Số lượng</th><th>Thành tiền</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var i in Model.Items)
+            {
+                <tr>
+                    <td>@i.ProductName</td>
+                    <td>@i.Size</td>
+                    <td>@i.UnitPrice.ToString("#,##0")đ</td>
+                    <td>@i.Quantity</td>
+                    <td>@i.LineTotal.ToString("#,##0")đ</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="summary-box">
+        <p>Tiền hàng: <span>@Model.SubTotal.ToString("#,##0")đ</span></p>
+        @if (Model.DiscountAmount > 0)
+        {
+            <p>Giảm giá (@Model.VoucherCode): <span>-@Model.DiscountAmount.ToString("#,##0")đ</span></p>
+        }
+        <p>Phí vận chuyển: <span>@Model.ShippingFee.ToString("#,##0")đ</span></p>
+        <p class="total-price">Tổng thanh toán: <span>@Model.TotalPrice.ToString("#,##0")đ</span></p>
+    </div>
+
+    @if (Model.Status == OrderStatus.ChoXacNhan)
+    {
+        using (Html.BeginForm("HuyDonHang", "Home", new { id = Model.OrderID }, FormMethod.Post, new { onsubmit = "return confirm('Bạn chắc chắn muốn hủy đơn #" + Model.OrderID + "?');", style = "margin-top:18px;" }))
+        {
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn" style="background:#fff;color:#b91c1c !important;border:1px solid #fecaca;">Hủy đơn hàng</button>
+            <span style="font-size:13px;color:#6b7280;margin-left:8px;">Chỉ hủy được khi đơn còn "Chờ xác nhận".</span>
+        }
+    }
+
+    <div class="back-link">
+        <a href="/Home/LichSuMuaHang">&larr; Quay lại Đơn hàng của tôi</a>
+    </div>
+</main>

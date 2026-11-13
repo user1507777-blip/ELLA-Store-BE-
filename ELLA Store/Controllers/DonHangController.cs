@@ -28,6 +28,7 @@ namespace ELLA_Store.Controllers
             ViewBag.Q = q;
             var tatCa = OrderStore.All();
             ViewBag.DoanhThu = tatCa.Where(o => o.Status == OrderStatus.HoanThanh).Sum(o => o.TotalPrice);
+            ViewBag.ChoHoanTien = OrderStore.CountPendingRefund();
             ViewBag.DemTheoTrangThai = OrderStatus.All.ToDictionary(s => s, s => tatCa.Count(o => o.Status == s));
             return View(list);
         }
@@ -58,50 +59,34 @@ namespace ELLA_Store.Controllers
         {
             string loi;
             if (OrderStore.ChangeStatus(id, trangThaiMoi, out loi))
-                TempData["ThongBao"] = "Đơn #" + id + " đã chuyển sang \"" + trangThaiMoi + "\"."
-                                     + (trangThaiMoi == OrderStatus.DaHuy ? " Tồn kho đã được hoàn lại." : "");
+            {
+                string them = "";
+                if (trangThaiMoi == OrderStatus.DaHuy)
+                {
+                    var o = OrderStore.Find(id);
+                    them = " Tồn kho đã được hoàn lại."
+                         + (o != null && o.PaymentStatus == PayStatus.ChoHoanTien ? " Đơn đã thanh toán trước nên cần hoàn tiền cho khách." : "");
+                }
+                else if (trangThaiMoi == OrderStatus.HoanThanh)
+                    them = " Đơn đã kết thúc.";
+                TempData["ThongBao"] = "Đơn #" + id + " đã chuyển sang \"" + trangThaiMoi + "\"." + them;
+            }
             else
                 TempData["Loi"] = loi;
             return RedirectToAction("ChiTiet", new { id });
         }
 
-        // Danh sách mã voucher hợp lệ: mã -> số tiền giảm (VNĐ)
-        private static readonly System.Collections.Generic.Dictionary<string, decimal> DanhSachVoucher =
-            new System.Collections.Generic.Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "GIAMGIA50K", 50000m },
-                { "GIAMGIA100K", 100000m }
-            };
-
-        // POST: DonHang/ApDungVoucher
+        // POST: DonHang/XacNhanHoanTien - đơn đã hủy mà khách đã thanh toán trước: admin xác nhận đã hoàn tiền
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ApDungVoucher(string voucherCode)
+        public ActionResult XacNhanHoanTien(int id)
         {
-            string ma = (voucherCode ?? "").Trim();
-            decimal giam;
-            if (ma.Length > 0 && DanhSachVoucher.TryGetValue(ma, out giam))
-            {
-                Session["VoucherCode"] = ma.ToUpper();
-                Session["DiscountAmount"] = giam;
-                TempData["ThongBao"] = "Áp dụng mã giảm giá thành công!";
-            }
+            string loi;
+            if (OrderStore.ConfirmRefund(id, out loi))
+                TempData["ThongBao"] = "Đã xác nhận hoàn tiền cho đơn #" + id + ".";
             else
-            {
-                TempData["Loi"] = "Mã voucher không hợp lệ!";
-            }
-            return RedirectToAction("Index");
-        }
-
-        // POST: DonHang/HuyVoucher
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult HuyVoucher()
-        {
-            Session.Remove("VoucherCode");
-            Session.Remove("DiscountAmount");
-            TempData["ThongBao"] = "Đã bỏ mã giảm giá.";
-            return RedirectToAction("Index");
+                TempData["Loi"] = loi;
+            return RedirectToAction("ChiTiet", new { id });
         }
     }
 }

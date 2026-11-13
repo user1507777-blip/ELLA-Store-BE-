@@ -1,0 +1,63 @@
+﻿@model ELLA_Store.Models.ProfileViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Tài khoản của tôi";
+    ViewBag.TabTaiKhoan = "thongtin";
+}
+
+<div class="container-custom">
+    @Html.Partial("_MenuTaiKhoan")
+    <div class="acc-stats">
+        <div><b>@ViewBag.TongDon</b><span>Tổng số đơn</span></div>
+        <div><b>@ViewBag.DonDangXuLy</b><span>Đang xử lý</span></div>
+        <div><b>@ViewBag.DonHoanThanh</b><span>Đã hoàn thành</span></div>
+        <div><b>@(((decimal)ViewBag.TongChiTieu).ToString("#,##0"))đ</b><span>Đã chi tiêu</span></div>
+    </div>
+    <div class="auth-wrapper">
+        <div class="auth-box">
+            <h2>Tài Khoản Của Tôi</h2>
+
+            @if (ViewBag.ThongBao != null)
+            {
+                <p class="success-msg">@ViewBag.ThongBao</p>
+            }
+
+            @using (Html.BeginForm("TaiKhoan", "Home", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    <div class="fl-nhan" style="display:block;font-size:13px;font-weight:700;color:#334155;margin:0 0 4px;visibility:visible;opacity:1;">Tên đăng nhập</div>
+                    <input type="text" value="@Model.Username" class="form-control" readonly>
+                </div>
+
+                <div class="form-group">
+                    <div class="fl-nhan" style="display:block;font-size:13px;font-weight:700;color:#334155;margin:0 0 4px;visibility:visible;opacity:1;">Họ và tên *</div>
+                    <input type="text" name="FullName" value="@Model.FullName" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("FullName")</span>
+                </div>
+
+                <div class="form-group">
+                    <div class="fl-nhan" style="display:block;font-size:13px;font-weight:700;color:#334155;margin:0 0 4px;visibility:visible;opacity:1;">Số điện thoại *</div>
+                    <input type="text" name="Phone" value="@Model.Phone" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("Phone")</span>
+                </div>
+
+                <div class="form-group">
+                    <div class="fl-nhan" style="display:block;font-size:13px;font-weight:700;color:#334155;margin:0 0 4px;visibility:visible;opacity:1;">Email</div>
+                    <input type="email" name="Email" value="@Model.Email" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("Email")</span>
+                </div>
+
+                <div class="form-group">
+                    <div class="fl-nhan" style="display:block;font-size:13px;font-weight:700;color:#334155;margin:0 0 4px;visibility:visible;opacity:1;">Địa chỉ *</div>
+                    <input type="text" name="Address" value="@Model.Address" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("Address")</span>
+                </div>
+
+                <button type="submit" class="btn">Lưu thay đổi</button>
+            }
+
+        </div>
+    </div>
+</div>

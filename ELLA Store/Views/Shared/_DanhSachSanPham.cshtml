@@ -11,6 +11,13 @@
         <option value="price_desc" @(Model.SortOrder == "price_desc" ? "selected" : "")>Giá giảm dần</option>
         <option value="name" @(Model.SortOrder == "name" ? "selected" : "")>Tên A-Z</option>
     </select>
+    <select name="tieuChi">
+        <option value="">Tất cả sản phẩm</option>
+        @foreach (var tc in ELLA_Store.Models.ProductStore.TieuChiKhach)
+        {
+            <option value="@tc.Key" @(Model.Criteria == tc.Key ? "selected" : "")>@tc.Value</option>
+        }
+    </select>
     <button type="submit" class="btn">Lọc</button>
 </form>
 
@@ -20,7 +27,19 @@
         <a href="/Home/Chitietsanpham?id=@p.ProductID" class="product-item">
             <img src="@Url.Content("~/Content/image/" + p.ImagePro)" alt="@p.NamePro">
             <h3>@p.NamePro</h3>
-            <p class="price">@p.Price.ToString("#,##0")đ</p>
+            @if (p.IsBestSeller)
+            {
+                <span class="best-badge">BEST SELLER</span>
+            }
+            @if (p.IsSale)
+            {
+                <span class="sale-badge">-@p.DiscountPercent%</span>
+                <p class="price">@p.SalePrice.ToString("#,##0")đ <del class="old-price">@p.Price.ToString("#,##0")đ</del></p>
+            }
+            else
+            {
+                <p class="price">@p.Price.ToString("#,##0")đ</p>
+            }
         </a>
     }
 </div>
@@ -44,6 +63,7 @@
                     minPrice = Model.MinPrice,
                     maxPrice = Model.MaxPrice,
                     sortOrder = Model.SortOrder,
+                    tieuChi = Model.Criteria,
                     page = Model.CurrentPage - 1
                 })">&larr; Trước</a>
         }
@@ -72,6 +92,7 @@
                         minPrice = Model.MinPrice,
                         maxPrice = Model.MaxPrice,
                         sortOrder = Model.SortOrder,
+                    tieuChi = Model.Criteria,
                         page = i
                     })">@i</a>
                 }
@@ -86,6 +107,7 @@
                     minPrice = Model.MinPrice,
                     maxPrice = Model.MaxPrice,
                     sortOrder = Model.SortOrder,
+                    tieuChi = Model.Criteria,
                     page = Model.CurrentPage + 1
                 })">Sau &rarr;</a>
         }
@@ -122,6 +144,42 @@
             cursor: pointer;
         }
 
+    .product-item {
+        position: relative;
+    }
+
+    .best-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #111827;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .5px;
+        padding: 3px 8px;
+        border-radius: 8px;
+    }
+
+    .sale-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #dc2626;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 8px;
+    }
+
+    .old-price {
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 400;
+        margin-left: 4px;
+    }
+
     .store-pagination {
         display: flex;
         flex-wrap: wrap;
@@ -134,7 +192,7 @@
             min-width: 40px;
             padding: 9px 14px;
             text-align: center;
-            border: 1px solid #808080;
+            border: 1px solid var(--line, #d7e3e1);
             border-radius: 10px;
             background: #fff;
             color: inherit;
@@ -143,8 +201,8 @@
         }
 
             .store-pagination a:hover {
-                border-color: #1e2235;
-                color: grey;
+                border-color: var(--brand, #dc2626);
+                color: var(--brand, #dc2626);
             }
 
             .store-pagination span.dots {
@@ -155,8 +213,8 @@
             }
 
             .store-pagination span.active {
-                background: #1e2235;
-                border-color: #1e2235;
+                background: var(--brand, #dc2626);
+                border-color: var(--brand, #dc2626);
                 color: #fff;
             }
 </style>

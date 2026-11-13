@@ -71,6 +71,12 @@ namespace ELLA_Store.Models
             }
         }
 
+        // Tài khoản admin gốc của hệ thống: không ai được xóa hoặc khóa (kể cả các quản trị viên khác).
+        public static bool IsProtectedAdmin(string username)
+        {
+            return string.Equals((username ?? "").Trim(), "admin", StringComparison.OrdinalIgnoreCase);
+        }
+
         public static int CountAdmins()
         {
             using (var db = new Db.MyStoreEntities())

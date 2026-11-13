@@ -1,0 +1,175 @@
+﻿@model ELLA_Store.Models.ThongKeViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Thống kê doanh thu";
+    decimal maxNgay = Model.TheoNgay.Count == 0 ? 0 : Model.TheoNgay.Max(x => x.DoanhThu);
+    decimal tongHang = Model.TheoHang.Sum(x => x.DoanhThu);
+}
+
+<div class="container-custom">
+    <h2>Thống Kê Doanh Thu</h2>
+
+    @if (TempData["ThongBao"] != null) { <p class="success-msg">@TempData["ThongBao"]</p> }
+    @if (TempData["Loi"] != null) { <p class="error-msg">@TempData["Loi"]</p> }
+
+    <form method="get" action="/ThongKe" class="admin-toolbar">
+        <label>Từ ngày <input type="date" name="tu" value="@Model.Tu.ToString("yyyy-MM-dd")" class="form-control"></label>
+        <label>Đến ngày <input type="date" name="den" value="@Model.Den.ToString("yyyy-MM-dd")" class="form-control"></label>
+        <button type="submit" class="btn">Xem thống kê</button>
+        <a href="/ThongKe?tu=@DateTime.Today.AddDays(-6).ToString("yyyy-MM-dd")&den=@DateTime.Today.ToString("yyyy-MM-dd")">7 ngày</a>
+        <a href="/ThongKe?tu=@DateTime.Today.AddDays(-29).ToString("yyyy-MM-dd")&den=@DateTime.Today.ToString("yyyy-MM-dd")">30 ngày</a>
+        <a href="/ThongKe?tu=@(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("yyyy-MM-dd"))&den=@DateTime.Today.ToString("yyyy-MM-dd")">Tháng này</a>
+    </form>
+
+    <div class="admin-stats">
+        <div class="order-box"><strong style="color:#0f766e;">@Model.TongDoanhThu.ToString("#,##0")đ</strong><br>Doanh thu</div>
+        <div class="order-box"><strong>@Model.SoDonHoanThanh</strong><br>Đơn hoàn thành</div>
+        <div class="order-box"><strong>@Model.TrungBinhMoiDon.ToString("#,##0")đ</strong><br>Trung bình mỗi đơn</div>
+        <div class="order-box"><strong style="color:#b91c1c;">@Model.SoDonHuy</strong><br>Đơn đã hủy</div>
+        <div class="order-box"><strong style="color:#b45309;">@Model.TienHoan.ToString("#,##0")đ</strong><br>Tiền hoàn (đơn hủy đã trả trước)</div>
+    </div>
+    <p style="font-size:13px;color:#64748b;">Doanh thu tính theo đơn <strong>Hoàn thành</strong> đặt từ @Model.Tu.ToString("dd/MM/yyyy") đến @Model.Den.ToString("dd/MM/yyyy"), đã gồm phí vận chuyển; không tính đơn đã hủy.</p>
+
+    <h3>Doanh thu theo ngày</h3>
+    <table class="order-table">
+        <thead><tr><th style="width:120px;">Ngày</th><th style="width:80px;">Số đơn</th><th style="width:150px;">Doanh thu</th><th>Biểu đồ</th></tr></thead>
+        <tbody>
+            @foreach (var n in Model.TheoNgay)
+            {
+                int pct = maxNgay == 0 ? 0 : (int)Math.Round((double)(n.DoanhThu / maxNgay) * 100);
+                <tr>
+                    <td>@n.Ngay.ToString("dd/MM/yyyy")</td>
+                    <td>@n.SoDon</td>
+                    <td>@n.DoanhThu.ToString("#,##0")đ</td>
+                    <td><div style="background:#e2e8f0;border-radius:6px;height:14px;"><div style="width:@(pct)%;background:#0f766e;height:14px;border-radius:6px;"></div></div></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h3 style="margin-top:28px;">Doanh thu theo hãng giày</h3>
+    <table class="order-table">
+        <thead><tr><th>Hãng</th><th style="width:100px;">Đã bán</th><th style="width:160px;">Doanh thu</th><th style="width:90px;">Tỷ lệ</th><th>Biểu đồ</th></tr></thead>
+        <tbody>
+            @foreach (var h in Model.TheoHang)
+            {
+                int pct = tongHang == 0 ? 0 : (int)Math.Round((double)(h.DoanhThu / tongHang) * 100);
+                <tr>
+                    <td>@h.Hang</td>
+                    <td>@h.SoLuong</td>
+                    <td>@h.DoanhThu.ToString("#,##0")đ</td>
+                    <td>@pct%</td>
+                    <td><div style="background:#e2e8f0;border-radius:6px;height:14px;"><div style="width:@(pct)%;background:#334155;height:14px;border-radius:6px;"></div></div></td>
+                </tr>
+            }
+            @if (Model.TheoHang.Count == 0)
+            {
+                <tr><td colspan="5" style="text-align:center;">Chưa có đơn hoàn thành trong khoảng này.</td></tr>
+            }
+        </tbody>
+    </table>
+    <p style="font-size:12px;color:#94a3b8;">Doanh thu theo hãng và sản phẩm tính trên tiền hàng (chưa gồm phí vận chuyển).</p>
+
+    <h3 style="margin-top:28px;">Top 5 sản phẩm bán chạy trong khoảng ngày đã chọn</h3>
+    <table class="order-table">
+        <thead><tr><th style="width:50px;">#</th><th>Sản phẩm</th><th style="width:110px;">Đã bán</th><th style="width:160px;">Doanh thu</th></tr></thead>
+        <tbody>
+            @{ int hang = 0; }
+            @foreach (var p in Model.TopSanPham)
+            {
+                hang++;
+                <tr>
+                    <td>@hang</td>
+                    <td>@p.Ten</td>
+                    <td>@p.SoLuong</td>
+                    <td>@p.DoanhThu.ToString("#,##0")đ</td>
+                </tr>
+            }
+            @if (Model.TopSanPham.Count == 0)
+            {
+                <tr><td colspan="4" style="text-align:center;">Chưa có dữ liệu.</td></tr>
+            }
+        </tbody>
+    </table>
+
+    <h3 style="margin-top:34px;">🔥 Best Seller (tự động gắn nhãn trên trang khách)</h3>
+    <p style="font-size:13px;color:#64748b;">Top @ELLA_Store.Models.ProductStore.SoBestSeller sản phẩm có số lượng bán cao nhất từ trước đến nay (không tính đơn đã hủy) tự hiện nhãn <strong>BEST SELLER</strong>.</p>
+    <table class="order-table">
+        <thead><tr><th style="width:50px;">#</th><th>Sản phẩm</th><th style="width:110px;">Đã bán</th><th style="width:100px;">Còn tồn</th></tr></thead>
+        <tbody>
+            @{ int bs = 0; }
+            @foreach (var p in Model.BestSeller)
+            {
+                bs++;
+                <tr><td>@bs</td><td>@p.NamePro <span class="st st-cho">BEST SELLER</span></td><td>@p.Sold</td><td>@p.Stock</td></tr>
+            }
+            @if (Model.BestSeller.Count == 0)
+            {
+                <tr><td colspan="4" style="text-align:center;">Chưa có sản phẩm nào được bán.</td></tr>
+            }
+        </tbody>
+    </table>
+
+    <h3 style="margin-top:28px;">🏷️ Sản phẩm bán chậm – đề xuất đưa vào sale</h3>
+    <p style="font-size:13px;color:#64748b;">Các sản phẩm còn hàng nhưng ít người mua nhất. Chọn một <strong>voucher</strong> trong bảng mã bên dưới rồi bấm "Áp dụng" để giá giảm theo % của mã hiện ngay trên trang khách.</p>
+
+    @{ var dsVoucher = (System.Collections.Generic.List<ELLA_Store.Models.Voucher>)ViewBag.Vouchers; }
+    <table class="order-table" style="margin-bottom:16px;">
+        <thead><tr><th>Mã voucher</th><th style="width:90px;">Giảm</th><th>Mô tả</th><th style="width:130px;">Trạng thái</th></tr></thead>
+        <tbody>
+            @foreach (var v in dsVoucher)
+            {
+                <tr>
+                    <td><strong>@v.Code</strong></td>
+                    <td>@v.DiscountPercent%</td>
+                    <td>@v.Description</td>
+                    <td>@(v.IsExpired ? "Hết hạn" : (v.IsActive ? "Đang áp dụng" : "Tạm ngưng"))</td>
+                </tr>
+            }
+            @if (dsVoucher.Count == 0)
+            {
+                <tr><td colspan="4" style="text-align:center;">Chưa có voucher. <a href="/Voucher/Them">Thêm voucher</a></td></tr>
+            }
+        </tbody>
+    </table>
+    <p style="font-size:13px;"><a href="/Voucher">Quản lý voucher →</a></p>
+    <table class="order-table">
+        <thead><tr><th>Sản phẩm</th><th style="width:90px;">Đã bán</th><th style="width:90px;">Còn tồn</th><th style="width:130px;">Giá gốc</th><th style="width:110px;">Giảm hiện tại</th><th style="width:340px;">Áp voucher</th></tr></thead>
+        <tbody>
+            @foreach (var p in Model.BanCham)
+            {
+                <tr>
+                    <td>@p.NamePro</td>
+                    <td>@p.Sold</td>
+                    <td>@p.Stock</td>
+                    <td>@p.Price.ToString("#,##0")đ</td>
+                    <td>@(p.DiscountPercent > 0 ? p.DiscountPercent + "%" : "Chưa sale")</td>
+                    <td>
+                        <form method="post" action="/ThongKe/ApDungSale" class="admin-inline" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@p.ProductID">
+                            <input type="hidden" name="tu" value="@Model.Tu.ToString("yyyy-MM-dd")">
+                            <input type="hidden" name="den" value="@Model.Den.ToString("yyyy-MM-dd")">
+                            <select name="voucherId" class="quantity-input" style="width:auto;">
+                                <option value="">-- Chọn voucher --</option>
+                                @foreach (var v in dsVoucher.Where(x => x.IsUsable))
+                                {
+                                    <option value="@v.VoucherID" @(p.DiscountPercent == v.DiscountPercent ? "selected" : "")>@v.Code (-@(v.DiscountPercent)%)</option>
+                                }
+                            </select>
+                            <button type="submit">Áp dụng</button>
+                            @if (p.DiscountPercent > 0)
+                            {
+                                <button type="submit" name="boSale" value="1" style="background:#b91c1c;">Bỏ sale</button>
+                            }
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (Model.BanCham.Count == 0)
+            {
+                <tr><td colspan="6" style="text-align:center;">Không có sản phẩm bán chậm.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

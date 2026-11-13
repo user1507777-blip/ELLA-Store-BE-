@@ -2,9 +2,13 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Puma";
+    ViewBag.BannerSlogan = "Forever Faster";
+    ViewBag.BannerMoTa = "Puma kết hợp tốc độ và phong cách thể thao, từ giày chạy đến mẫu lifestyle cá tính.";
+    ViewBag.BannerVideo = "puma.mp4";
 }
 
 <div class="container-custom">
-    <div class="section-title">Puma</div>
+    @Html.Partial("_BannerHang", Model)
+    <div id="danhSachSanPham" class="section-title">Puma</div>
     @Html.Partial("_DanhSachSanPham", Model)
 </div>

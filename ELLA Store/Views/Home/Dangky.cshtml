@@ -1,119 +1,175 @@
-﻿@{
+﻿@model ELLA_Store.Models.RegisterViewModel
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Đăng ký";
 }
 
-    <div class="container-custom">
+<style>
+    .login-page { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 320px); padding: 12px 0 24px; }
+    .login-card { display: grid; grid-template-columns: 1fr 1fr; width: 100%; max-width: 920px; min-height: 480px; background: #fff; border: 1px solid #e5e7eb; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(17,24,39,.08); }
+    .login-side { position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 36px; color: #fff; background: #111827 url('@Url.Content("~/Content/image/banner2.jpeg")') center / cover no-repeat; }
+    .login-side::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(17,24,39,.88), rgba(17,24,39,.25)); }
+    .login-side > * { position: relative; }
+    .login-side .tag { font-size: 12px; font-weight: 700; letter-spacing: 4px; color: #d1d5db; margin-bottom: 10px; }
+    .login-side h3 { margin: 0 0 10px; font-size: 28px; line-height: 1.2; font-weight: 800; }
+    .login-side p { margin: 0; font-size: 14px; line-height: 1.6; color: #e5e7eb; }
 
-        <div class="auth-wrapper">
+    .login-form { padding: 48px 44px; display: flex; flex-direction: column; justify-content: center; }
+    .login-form h2 { margin: 0 0 6px; font-size: 26px; font-weight: 800; }
+    .login-form .sub { margin: 0 0 26px; font-size: 14px; color: #6b7280; }
+    .login-form .lb { display: block; font-size: 13px; font-weight: 600; color: #111827; margin: 0 0 6px; }
+    .login-form .field { margin-bottom: 14px; }
+    .login-form input[type=text], .login-form input[type=password] { width: 100%; height: 46px; padding: 0 14px; border: 1px solid #d1d5db; border-radius: 10px; background: #fff; font: inherit; font-size: 14px; transition: border-color .2s, box-shadow .2s; }
+    .login-form input:focus { outline: none; border-color: #111827; box-shadow: 0 0 0 3px rgba(17,24,39,.1); }
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 70px !important; }
+    .pw-toggle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: 0; background: transparent; color: #6b7280; font-size: 13px; font-weight: 600; cursor: pointer; padding: 6px 8px; }
+    .pw-toggle:hover { color: #111827; }
+    .login-btn { width: 100%; height: 46px; border: 0; border-radius: 10px; background: #111827; color: #fff; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: background .2s; margin-top: 4px; }
+    .login-btn:hover { background: #dc2626; }
+    .login-foot { margin: 22px 0 0; text-align: center; font-size: 14px; color: #6b7280; }
+    .login-foot a { color: #111827; font-weight: 700; text-decoration: none; border-bottom: 1px solid #111827; }
+    .login-foot a:hover { color: #dc2626; border-color: #dc2626; }
+    .login-ok { margin: 0 0 16px; padding: 10px 14px; border-radius: 10px; background: #f0fdf4; color: #166534; font-size: 14px; }
+    .login-err { margin: 0 0 14px; padding: 10px 14px; border-radius: 10px; background: #fef2f2; color: #b91c1c; font-size: 14px; }
+    .login-err:empty, .login-err ul:empty { display: none; }
+    .login-form .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .login-form input[type=email] { width: 100%; height: 46px; padding: 0 14px; border: 1px solid #d1d5db; border-radius: 10px; background: #fff; font: inherit; font-size: 14px; }
+    .login-form input::placeholder { color: #9ca3af; opacity: 1; }
+    .login-form input.sai { border-color: #dc2626; background: #fff7f7; }
+    .login-form .error-msg { font-size: 12px; margin-top: 4px; }
+    .dk-loi { margin: 0 0 14px; padding: 10px 14px; border-radius: 10px; background: #fef2f2; color: #b91c1c; font-size: 14px; }
+    .dk-loi ul { margin: 6px 0 0 18px; padding: 0; }
+    .login-form { padding-top: 36px; padding-bottom: 36px; }
+    @@media (max-width: 760px) {
+        .login-form .row2 { grid-template-columns: 1fr; }
+        .login-card { grid-template-columns: 1fr; }
+        .login-side { display: none; }
+        .login-form { padding: 32px 24px; }
+    }
+</style>
 
-            <!-- KHỐI FORM ĐĂNG KÝ -->
-            <div class="auth-box">
+<div class="login-page">
+    <div class="login-card">
 
-                <h2>Tạo Tài Khoản Mới</h2>
+        <!-- CỘT ẢNH -->
+        <div class="login-side">
+            <span class="tag">ELLA STORE</span>
+            <h3>Tham gia cùng ELLA</h3>
+            <p>Tạo tài khoản để đặt hàng nhanh hơn, theo dõi đơn và nhận ưu đãi dành riêng cho thành viên.</p>
+        </div>
 
-                <form onsubmit="return validateForm()">
+        <!-- CỘT FORM -->
+        <div class="login-form">
+            <h2>Tạo tài khoản</h2>
+            <p class="sub">Điền thông tin bên dưới để bắt đầu mua sắm.</p>
 
-                    <div class="form-group">
-                        <label>Địa chỉ Email *</label>
+            @using (Html.BeginForm("DangKy", "Home", FormMethod.Post, new { onsubmit = "return validateForm()" }))
+            {
+                @Html.AntiForgeryToken()
 
-                        <input type="text" id="username" class="form-control" placeholder="Nhập địa chỉ email....">
+                <div id="loiTongHop" class="dk-loi" style="@(ViewData.ModelState.IsValid ? "display:none;" : "")">
+                    <strong>Vui lòng sửa các lỗi sau:</strong>
+                    <ul id="dsLoi">
+                        @foreach (var kv in ViewData.ModelState)
+                        {
+                            foreach (var er in kv.Value.Errors)
+                            {
+                                <li>@er.ErrorMessage</li>
+                            }
+                        }
+                    </ul>
+                </div>
 
-                        <span id="username_err" class="error-msg"></span>
+                <div class="field">
+                    <label class="lb">Tên đăng nhập *</label>
+                    <input type="text" id="username" name="Username" value="@Model.Username" placeholder="Từ 5 ký tự, chỉ chữ và số" maxlength="50" autocomplete="username">
+                    <span id="username_err" class="error-msg">@Html.ValidationMessage("Username")</span>
+                </div>
+                <div class="row2">
+                    <div class="field">
+                        <label class="lb">Mật khẩu *</label>
+                        <input type="password" id="password" name="Password" placeholder="Tối thiểu 8 ký tự" autocomplete="new-password">
+                        <span id="password_err" class="error-msg">@Html.ValidationMessage("Password")</span>
                     </div>
-
-                    <div class="form-group">
-                        <label>Mật khẩu *</label>
-
-                        <input type="password" id="password" class="form-control">
-
-                        <span id="password_err" class="error-msg"></span>
+                    <div class="field">
+                        <label class="lb">Xác nhận mật khẩu *</label>
+                        <input type="password" id="repass" name="ConfirmPassword" placeholder="Nhập lại mật khẩu" autocomplete="new-password">
+                        <span id="repass_err" class="error-msg">@Html.ValidationMessage("ConfirmPassword")</span>
                     </div>
-
-                    <div class="form-group">
-                        <label>Xác nhận mật khẩu *</label>
-
-                        <input type="password" id="repass" class="form-control">
-
-                        <span id="repass_err" class="error-msg"></span>
+                </div>
+                <div class="row2">
+                    <div class="field">
+                        <label class="lb">Họ và tên *</label>
+                        <input type="text" name="FullName" value="@Model.FullName" placeholder="Ví dụ: Lê Thị Thu Thảo">
+                        <span class="error-msg">@Html.ValidationMessage("FullName")</span>
                     </div>
+                    <div class="field">
+                        <label class="lb">Số điện thoại *</label>
+                        <input type="text" id="phone" name="Phone" value="@Model.Phone" placeholder="Ví dụ: 0912345678">
+                        <span id="phone_err" class="error-msg">@Html.ValidationMessage("Phone")</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="lb">Email (không bắt buộc)</label>
+                    <input type="email" name="Email" value="@Model.Email" placeholder="ten@gmail.com">
+                    <span class="error-msg">@Html.ValidationMessage("Email")</span>
+                </div>
+                <div class="field">
+                    <label class="lb">Địa chỉ *</label>
+                    <input type="text" name="Address" value="@Model.Address" placeholder="Số nhà, đường, phường/xã, quận/huyện">
+                    <span class="error-msg">@Html.ValidationMessage("Address")</span>
+                </div>
 
-                    <button type="submit" class="btn">
-                        Tạo tài khoản
-                    </button>
+                <button type="submit" class="login-btn">Tạo tài khoản</button>
+            }
 
-                </form>
-
-                <p>
-                    Đã có tài khoản?
-                    <a href="/Home/Dangnhap">Đăng nhập</a>
-                </p>
-
-            </div>
-
+            <p class="login-foot">Đã có tài khoản? <a href="/Home/Dangnhap">Đăng nhập</a></p>
         </div>
 
     </div>
+</div>
 
-    <!-- JAVASCRIPT KIỂM TRA DỮ LIỆU -->
-    <script>
+<!-- JAVASCRIPT KIỂM TRA DỮ LIỆU (chạy trước khi gửi lên server; server kiểm tra lại và lưu DB) -->
+<script>
+    function validateForm() {
+        var loi = [];
+        var oSai = [];
 
-        function validateForm() {
-
-            // Xóa thông báo lỗi cũ
-            document.getElementById("username_err").innerText = "";
-            document.getElementById("password_err").innerText = "";
-            document.getElementById("repass_err").innerText = "";
-
-            // Lấy dữ liệu người dùng nhập
-            var user = document.getElementById("username").value;
-            var pass = document.getElementById("password").value;
-            var repass = document.getElementById("repass").value;
-
-            // Ban đầu cho rằng dữ liệu hợp lệ
-            var isValid = true;
-
-            // Kiểm tra Username
-           
-            var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
-        
-
-            if (!emailRegex.test(user)) {
-
-                document.getElementById("username_err").innerText =
-                    "Tên Email phải đúng định dạng!";
-
-                isValid = false;
-            }
-
-            // Kiểm tra độ dài mật khẩu
-            if (pass.length < 8) {
-
-                document.getElementById("password_err").innerText =
-                    "Mật khẩu hệ thống yêu cầu chứa tối thiểu 8 ký tự!";
-
-                isValid = false;
-            }
-
-            // Kiểm tra mật khẩu nhập lại
-            if (pass !== repass) {
-
-                document.getElementById("repass_err").innerText =
-                    "Mật khẩu xác nhận gõ lại chưa trùng khớp!";
-
-                isValid = false;
-            }
-
-            // Nếu tất cả đều đúng
-            if (isValid) {
-
-                alert(
-                    "Hệ thống chấp nhận dữ liệu! Đăng ký thành công tài khoản: "
-                    + user
-                );
-            }
-
-            return isValid;
+        function bao(idErr, idInput, msg) {
+            document.getElementById(idErr).innerText = msg;
+            document.getElementById(idInput).classList.add("sai");
+            loi.push(msg);
+            oSai.push(idInput);
         }
 
-    </script>
+        // Xóa lỗi cũ
+        ["username", "password", "repass", "phone"].forEach(function (id) { document.getElementById(id).classList.remove("sai"); });
+        ["username_err", "password_err", "repass_err", "phone_err"].forEach(function (id) { document.getElementById(id).innerText = ""; });
+
+        var user = document.getElementById("username").value;
+        var pass = document.getElementById("password").value;
+        var repass = document.getElementById("repass").value;
+
+        if (!/^[a-zA-Z0-9]{5,50}$/.test(user))
+            bao("username_err", "username", "Tên đăng nhập phải từ 5 ký tự trở lên (hiện có " + user.length + " ký tự) và chỉ gồm chữ, số, không có ký tự đặc biệt.");
+        if (pass.length < 8)
+            bao("password_err", "password", "Mật khẩu phải có tối thiểu 8 ký tự.");
+        if (pass !== repass)
+            bao("repass_err", "repass", "Mật khẩu xác nhận chưa trùng khớp.");
+
+        var phone = document.getElementById("phone").value.trim();
+        if (!/^(03|05|07|08|09)\d{8}$/.test(phone))
+            bao("phone_err", "phone", "Số điện thoại gồm đúng 10 số, bắt đầu bằng 03, 05, 07, 08 hoặc 09 (ví dụ 0912345678).");
+
+        var khung = document.getElementById("loiTongHop");
+        if (loi.length > 0) {
+            document.getElementById("dsLoi").innerHTML = loi.map(function (m) { return "<li>" + m + "</li>"; }).join("");
+            khung.style.display = "block";
+            khung.scrollIntoView({ behavior: "smooth", block: "center" });
+            document.getElementById(oSai[0]).focus();
+            return false;
+        }
+        return true;
+    }
+</script>

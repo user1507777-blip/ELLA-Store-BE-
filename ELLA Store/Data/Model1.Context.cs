@@ -31,5 +31,9 @@ namespace ELLA_Store.Data
         public virtual DbSet<OrderDetail> OrderDetail { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<User> User { get; set; }
+        public virtual DbSet<ProductSize> ProductSize { get; set; }
+        public virtual DbSet<Size> Size { get; set; }
+        public virtual DbSet<StockMovement> StockMovement { get; set; }
+        public virtual DbSet<Voucher> Voucher { get; set; }
     }
 }

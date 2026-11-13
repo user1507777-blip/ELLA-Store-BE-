@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -16,7 +17,7 @@ namespace ELLA_Store.Controllers
         private static readonly string[] AnhHopLe = { ".jpg", ".jpeg", ".png", ".webp", ".avif", ".gif" };
 
         // GET: HangHoa?q=...&danhMuc=...
-        public ActionResult Index(string q, int? danhMuc)
+        public ActionResult Index(string q, int? danhMuc, string tieuChi)
         {
             var list = ProductStore.All();
             if (!string.IsNullOrWhiteSpace(q))
@@ -24,7 +25,11 @@ namespace ELLA_Store.Controllers
             if (danhMuc.HasValue && danhMuc.Value > 0)
                 list = list.Where(p => p.CategoryID == danhMuc.Value).ToList();
 
+            // Tiêu chí: sale, banchay, moi, conhang, saphet, hethang
+            list = ProductStore.LocTheoTieuChi(list, tieuChi).ToList();
+
             ViewBag.Q = q;
+            ViewBag.TieuChi = tieuChi;
             ViewBag.DanhMuc = danhMuc;
             ViewBag.DanhMucs = CategoryStore.All();
             return View(list);
@@ -59,7 +64,7 @@ namespace ELLA_Store.Controllers
                 ViewBag.TieuDe = "Thêm hàng hóa";
                 return View("Form", model);
             }
-            ProductStore.Add(model);
+            ProductStore.Add(model, DocTonTheoSize(), (string)Session["Username"]);
             TempData["ThongBao"] = "Đã thêm hàng hóa \"" + model.NamePro + "\".";
             return RedirectToAction("Index");
         }
@@ -88,9 +93,36 @@ namespace ELLA_Store.Controllers
             }
             var cu = ProductStore.Find(model.ProductID);
             if (cu == null) return HttpNotFound();
-            model.Stock = cu.Stock;                 // tồn kho chỉ chỉnh ở Quản lý kho hàng
+            // Nhập thêm hàng: ô "them_<size>" = số lượng cộng thêm vào tồn của size đó (ghi lịch sử "Nhập kho")
+            var nhap = new System.Collections.Generic.List<KeyValuePair<string, int>>();
+            foreach (var sz in ProductStore.AllSizeNames())
+            {
+                string raw = (Request.Form["them_" + sz] ?? "").Trim();
+                if (raw.Length == 0) continue;
+                int n;
+                if (!int.TryParse(raw, out n) || n < 0 || n > 100000)
+                    ModelState.AddModelError("", "Số lượng nhập thêm cho size " + sz + " phải từ 0 đến 100.000.");
+                else if (n > 0) nhap.Add(new KeyValuePair<string, int>(sz, n));
+            }
+            if (!ModelState.IsValid)
+            {
+                LoadLists();
+                ViewBag.TieuDe = "Sửa hàng hóa";
+                model.Sizes = cu.Sizes;
+                return View("Form", model);
+            }
+            model.Stock = cu.Stock;                 // tồn kho chỉ đổi bằng cách nhập thêm ở các ô size bên dưới
             ProductStore.Update(model);
-            TempData["ThongBao"] = "Đã cập nhật hàng hóa \"" + model.NamePro + "\".";
+            int tongNhap = 0;
+            foreach (var kv in nhap)
+            {
+                string loiKho;
+                if (ProductStore.AdjustSize(model.ProductID, kv.Key, kv.Value, "Nhập kho", "Nhập thêm khi sửa hàng hóa", (string)Session["Username"], out loiKho))
+                    tongNhap += kv.Value;
+                else
+                    TempData["Loi"] = loiKho;
+            }
+            TempData["ThongBao"] = "Đã cập nhật hàng hóa \"" + model.NamePro + "\"" + (tongNhap > 0 ? " và nhập thêm " + tongNhap + " đôi." : ".");
             return RedirectToAction("Index");
         }
 
@@ -112,12 +144,24 @@ namespace ELLA_Store.Controllers
             var p = ProductStore.Find(id);
             if (p == null) return HttpNotFound();
 
-            if (OrderStore.HasProduct(id))
+            // Đang nằm trong đơn chưa kết thúc (khách đã đặt, chưa giao xong) -> không được xóa
+            int donDangXuLy = OrderStore.ActiveOrderOfProduct(id);
+            if (donDangXuLy > 0)
             {
-                TempData["Loi"] = "Không thể xóa \"" + p.NamePro + "\" vì đã phát sinh trong đơn hàng.";
+                TempData["Loi"] = "Không thể xóa \"" + p.NamePro + "\": sản phẩm đang có trong đơn hàng #" + donDangXuLy + " chưa hoàn tất.";
                 return RedirectToAction("Index");
             }
-            ProductStore.Delete(id);
+            // Đã từng được bán (có trong lịch sử đơn) -> không được xóa để giữ dữ liệu đơn hàng
+            if (OrderStore.HasProduct(id))
+            {
+                TempData["Loi"] = "Không thể xóa \"" + p.NamePro + "\": sản phẩm đã phát sinh trong đơn hàng.";
+                return RedirectToAction("Index");
+            }
+            if (!ProductStore.Delete(id))
+            {
+                TempData["Loi"] = "Không thể xóa \"" + p.NamePro + "\": sản phẩm đang được dữ liệu khác sử dụng.";
+                return RedirectToAction("Index");
+            }
             TempData["ThongBao"] = "Đã xóa hàng hóa \"" + p.NamePro + "\".";
             return RedirectToAction("Index");
         }
@@ -150,8 +194,25 @@ namespace ELLA_Store.Controllers
             ModelState.Remove("ImagePro");          // đã có ảnh -> bỏ lỗi "Required"
         }
 
+        // Đọc ô nhập số lượng từng size trên form thêm hàng hóa (tên ô: sl_38, sl_39, ...).
+        private Dictionary<string, int> DocTonTheoSize()
+        {
+            var kq = new Dictionary<string, int>();
+            foreach (var size in ProductStore.AllSizeNames())
+            {
+                int n;
+                if (int.TryParse(Request.Form["sl_" + size], out n) && n > 0)
+                {
+                    if (n > 100000) n = 100000;
+                    kq[size] = n;
+                }
+            }
+            return kq;
+        }
+
         private void LoadLists()
         {
+            ViewBag.Sizes = ProductStore.AllSizeNames();
             ViewBag.Brands = CategoryStore.Names();
             string dir = Server.MapPath("~/Content/image");
             ViewBag.Images = Directory.Exists(dir)

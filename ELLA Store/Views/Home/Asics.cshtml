@@ -2,9 +2,13 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Asics";
+    ViewBag.BannerSlogan = "Sound Mind, Sound Body";
+    ViewBag.BannerMoTa = "Asics nổi tiếng với công nghệ đệm GEL, hỗ trợ tối đa cho chạy bộ và vận động mỗi ngày.";
+    ViewBag.BannerVideo = "asic.mp4";
 }
 
 <div class="container-custom">
-    <div class="section-title">Asics</div>
+    @Html.Partial("_BannerHang", Model)
+    <div id="danhSachSanPham" class="section-title">Asics</div>
     @Html.Partial("_DanhSachSanPham", Model)
 </div>

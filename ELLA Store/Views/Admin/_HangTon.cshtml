@@ -1,7 +1,7 @@
 ﻿@model List<ELLA_Store.Models.Product>
 <table class="order-table">
     <thead>
-        <tr><th>ID</th><th>Ảnh</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Tồn kho</th><th>Nhập / xuất kho</th></tr>
+        <tr><th>ID</th><th>Ảnh</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Tồn theo size</th><th>Tổng</th></tr>
     </thead>
     <tbody>
         @foreach (var p in Model)
@@ -12,18 +12,17 @@
                 <td>@p.NamePro</td>
                 <td>@p.CategoryName</td>
                 <td>
-                    @if (p.Stock < 5)
-                    {<span class="st st-cho">@p.Stock (sắp hết)</span> }
-                else
-                { <span class="st st-xong">@p.Stock</span>}
+                    @foreach (var sz in p.Sizes)
+                    {
+                        <span class="st @(sz.Quantity == 0 ? "st-huy" : sz.Quantity < 3 ? "st-cho" : "st-xong")" style="margin:0 4px 4px 0;display:inline-block;">@sz.Size: @sz.Quantity</span>
+                    }
+                    @if (p.Sizes.Count == 0) { <em>Chưa có size</em> }
                 </td>
                 <td>
-                    <form method="post" action="/Admin/DieuChinhKho" class="admin-inline">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@p.ProductID">
-                        <input type="number" name="soLuong" required class="quantity-input" placeholder="+/-" title="Số dương = nhập kho, số âm = xuất kho">
-                        <button type="submit">Lưu</button>
-                    </form>
+                    @if (p.Stock < 5)
+                    { <span class="st st-cho">@p.Stock (sắp hết)</span> }
+                    else
+                    { <span class="st st-xong">@p.Stock</span> }
                 </td>
             </tr>
         }

@@ -3,13 +3,19 @@
     ViewBag.Title = "Quản lý kho hàng";
     var hangTon = (List<ELLA_Store.Models.Product>)ViewBag.HangTon;
     var canNhap = (List<ELLA_Store.Models.Product>)ViewBag.CanNhap;
+    var baoCao = (List<ELLA_Store.Models.StockReportRow>)ViewBag.BaoCao;
+    var lichSu = (List<ELLA_Store.Models.StockMove>)ViewBag.LichSu;
+    DateTime? tu = (DateTime?)ViewBag.Tu;
+    DateTime? den = (DateTime?)ViewBag.Den;
 }
 
 <div class="container-custom">
     <h2>Quản Lý Kho Hàng</h2>
 
-    @if (TempData["ThongBao"] != null) { <p class="success-msg">@TempData["ThongBao"]</p> }
-    @if (TempData["Loi"] != null) { <p class="error-msg">@TempData["Loi"]</p> }
+    @if (TempData["ThongBao"] != null)
+    {<p class="success-msg">@TempData["ThongBao"]</p>}
+    @if (TempData["Loi"] != null)
+    {<p class="error-msg">@TempData["Loi"]</p>}
 
     <div class="admin-stats">
         <div class="order-box"><strong>@(hangTon.Count + canNhap.Count)</strong><br>Mẫu sản phẩm</div>
@@ -20,7 +26,18 @@
 
     <form method="get" action="/Admin/SanPham" class="admin-toolbar">
         <input type="text" name="q" value="@ViewBag.Q" class="form-control" placeholder="Tìm theo tên sản phẩm...">
-        <button type="submit" class="btn">Tìm</button>
+        <label>
+            Sắp xếp
+            <select name="sx" class="form-control" onchange="this.form.submit()">
+                <option value="hang" @(ViewBag.Sx == "hang" ? "selected" : "")>Theo hãng giày (A-Z)</option>
+                <option value="moi" @(ViewBag.Sx == "moi" ? "selected" : "")>Mới nhất trước</option>
+                <option value="az" @(ViewBag.Sx == "az" ? "selected" : "")>Tên A-Z</option>
+                <option value="ton" @(ViewBag.Sx == "ton" ? "selected" : "")>Tồn kho ít nhất</option>
+            </select>
+        </label>
+        <label>Từ ngày <input type="date" name="tu" value="@(tu.HasValue ? tu.Value.ToString("yyyy-MM-dd") : "")" class="form-control"></label>
+        <label>Đến ngày <input type="date" name="den" value="@(den.HasValue ? den.Value.ToString("yyyy-MM-dd") : "")" class="form-control"></label>
+        <button type="submit" class="btn">Lọc</button>
     </form>
 
     <h3>Danh sách hàng tồn (số lượng tồn &gt; 0)</h3>
@@ -28,4 +45,60 @@
 
     <h3>Danh sách hàng cần nhập (số lượng tồn = 0)</h3>
     @Html.Partial("_CanNhap", canNhap)
+
+    <h3>Thống kê nhập - xuất kho @(tu.HasValue || den.HasValue ? "(theo khoảng ngày đã chọn)" : "(toàn bộ thời gian)")</h3>
+    <div class="admin-stats">
+        <div class="order-box"><strong style="color:#166534;">+@ViewBag.TongNhap</strong><br>Nhập kho</div>
+        <div class="order-box"><strong style="color:#1e40af;">+@ViewBag.TongHoan</strong><br>Hoàn kho (hủy đơn)</div>
+        <div class="order-box"><strong style="color:#b45309;">-@ViewBag.TongBan</strong><br>Bán ra (đơn hàng)</div>
+        <div class="order-box"><strong style="color:#b91c1c;">-@ViewBag.TongXuatKhac</strong><br>Xuất kho khác</div>
+    </div>
+    <table class="order-table">
+        <thead>
+            <tr><th>ID</th><th>Sản phẩm</th><th>Nhập kho</th><th>Hoàn kho</th><th>Bán ra</th><th>Xuất khác</th><th>Tồn hiện tại</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var r in baoCao)
+            {
+                <tr>
+                    <td>@r.ProductID</td>
+                    <td>@r.ProductName</td>
+                    <td>@r.Imported</td>
+                    <td>@r.Returned</td>
+                    <td>@r.Sold</td>
+                    <td>@r.OtherOut</td>
+                    <td><strong>@r.Stock</strong></td>
+                </tr>
+            }
+            @if (baoCao.Count == 0)
+            {
+                <tr><td colspan="7" style="text-align:center;">Chưa có phát sinh nhập/xuất trong khoảng này.</td></tr>
+            }
+        </tbody>
+    </table>
+
+    <h3>Lịch sử nhập - xuất gần đây</h3>
+    <table class="order-table">
+        <thead>
+            <tr><th>Thời gian</th><th>Sản phẩm</th><th>Size</th><th>Loại</th><th>Số lượng</th><th>Ghi chú</th><th>Người thực hiện</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var m in lichSu)
+            {
+                <tr>
+                    <td>@m.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@m.ProductName</td>
+                    <td>@m.Size</td>
+                    <td>@m.Type</td>
+                    <td style="color:@(m.Quantity > 0 ? "#166534" : "#b91c1c");font-weight:700;">@(m.Quantity > 0 ? "+" : "")@m.Quantity</td>
+                    <td>@m.Note</td>
+                    <td>@m.CreatedBy</td>
+                </tr>
+            }
+            @if (lichSu.Count == 0)
+            {
+                <tr><td colspan="7" style="text-align:center;">Chưa có lịch sử.</td></tr>
+            }
+        </tbody>
+    </table>
 </div>

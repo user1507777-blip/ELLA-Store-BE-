@@ -135,6 +135,8 @@
     <Compile Include="Controllers\HangHoaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\KhachHangController.cs" />
+    <Compile Include="Controllers\ThongKeController.cs" />
+    <Compile Include="Controllers\VoucherController.cs" />
     <Compile Include="Data\Category.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -165,7 +167,19 @@
     <Compile Include="Data\Product.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\ProductSize.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Size.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\StockMovement.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Data\User.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Voucher.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Filters\AdminRequiredAttribute.cs" />
@@ -187,6 +201,8 @@
     <Compile Include="Models\ProductStore.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserStore.cs" />
+    <Compile Include="Models\Voucher.cs" />
+    <Compile Include="Models\VoucherStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -242,6 +258,12 @@
     <Content Include="Content\image\puma8.3.jpg" />
     <Content Include="Content\image\puma8.jpg" />
     <Content Include="Content\image\puma9.1.jpg" />
+    <Content Include="Content\video\adidas.mp4" />
+    <Content Include="Content\video\asic.mp4" />
+    <Content Include="Content\video\biti.mp4" />
+    <Content Include="Content\video\NIKE - JUST DO IT - Spec ad.mp4" />
+    <Content Include="Content\video\nike.mp4" />
+    <Content Include="Content\video\puma.mp4" />
     <Content Include="Data\Model1.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>Model1.edmx</DependentUpon>
@@ -466,15 +488,12 @@
     <Content Include="Views\HangHoa\Index.cshtml" />
     <Content Include="Views\HangHoa\Xoa.cshtml" />
     <Content Include="Views\HangHoa\ChiTiet.cshtml" />
-    <Content Include="Views\Shared\_ChiTietSanPham.cshtml" />
     <Content Include="Views\KhachHang\ChiTiet.cshtml" />
     <Content Include="Views\KhachHang\Index.cshtml" />
     <Content Include="Views\Admin\NguoiDung.cshtml" />
     <Content Include="Views\Admin\SanPham.cshtml" />
     <Content Include="Views\Admin\SuaQuanTri.cshtml" />
     <Content Include="Views\Admin\ThemQuanTri.cshtml" />
-    <Content Include="Views\Admin\_CanNhap.cshtml" />
-    <Content Include="Views\Admin\_HangTon.cshtml" />
     <Content Include="Views\DonHang\ChiTiet.cshtml" />
     <Content Include="Views\DonHang\Index.cshtml" />
     <Content Include="Views\DonHang\_DanhSachChiTiet.cshtml" />
@@ -482,6 +501,16 @@
     <Content Include="Views\KhachHang\_ChiTiet.cshtml" />
     <Content Include="Views\Home\TimKiem.cshtml" />
     <Content Include="Views\Shared\_DanhSachSanPham.cshtml" />
+    <Content Include="Views\Home\Doimatkhau.cshtml" />
+    <Content Include="Views\Home\Taikhoan.cshtml" />
+    <Content Include="Views\Shared\_MenuTaiKhoan.cshtml" />
+    <Content Include="Views\Shared\_ChiTietSanPham.cshtml" />
+    <Content Include="Views\ThongKe\Index.cshtml" />
+    <Content Include="Views\Voucher\Form.cshtml" />
+    <Content Include="Views\Voucher\Index.cshtml" />
+    <Content Include="Views\Admin\_CanNhap.cshtml" />
+    <Content Include="Views\Admin\_HangTon.cshtml" />
+    <Content Include="Views\Shared\_BannerHang.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

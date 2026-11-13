@@ -9,7 +9,35 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewBag.Title - ELLA Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="@Url.Content("~/Content/css/style.css")" rel="stylesheet" />
+    <style>
+        /* Luôn hiện tên từng mục của form; ô chọn tròn/vuông giữ kích thước nhỏ */
+        .form-group label {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            color: #334155 !important;
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            height: auto !important;
+        }
+
+        .form-group input[type=radio], .form-group input[type=checkbox] {
+            width: auto !important;
+            height: auto !important;
+            padding: 0 !important;
+            margin: 0 8px 0 0 !important;
+            display: inline-block !important;
+            border-radius: 0 !important;
+        }
+
+        .form-control::placeholder, .form-group input::placeholder {
+            color: #94a3b8;
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
 
@@ -17,83 +45,56 @@
         <div class="container header-inner">
             <a class="brand" href="/Home/Index">ELLA<span>STORE</span></a>
 
-            <!-- Thanh tìm kiếm -->
-            <form class="search-box" method="get" action="/Home/TimKiem">
-                <input type="text" id="timKiem" name="keyword" value="@Request.QueryString["keyword"]" placeholder="Tìm kiếm sản phẩm...">
-                <button type="submit">Tìm</button>
-            </form>
+            <!-- Menu hãng giày -->
+            <nav class="main-menu">
+                <a href="/Home/Index" class="@act("Index")">Trang chủ</a>
+                <a href="/Home/Nike" class="@act("Nike")">Nike</a>
+                <a href="/Home/Adidas" class="@act("Adidas")">Adidas</a>
+                <a href="/Home/Biti" class="@act("Biti")">Biti's</a>
+                <a href="/Home/Asics" class="@act("Asics")">Asics</a>
+                <a href="/Home/Puma" class="@act("Puma")">Puma</a>
+            </nav>
 
-            <nav class="store-nav">
-                <a href="/Home/Index">Trang chủ</a>
-                <a href="/Home/Lichsumuahang">Lịch sử mua hàng</a>
-                @if ((string)Session["Role"] == "Admin")
-                {
-                    <a href="/Admin/SanPham">Quản trị</a>
-                }
+            <div class="header-right">
+                <!-- Thanh tìm kiếm -->
+                <form class="search-box" method="get" action="/Home/TimKiem">
+                    <input type="text" id="timKiem" name="keyword" value="@Request.QueryString["keyword"]" placeholder="Tìm kiếm sản phẩm...">
+                    <button type="submit">Tìm</button>
+                </form>
+
+                <!-- Tài khoản -->
                 @if (Session["UserID"] != null)
                 {
-                    <a href="/Home/TaiKhoan">Xin chào, @Session["FullName"]</a>
-                    <a href="/Home/DangXuat">Đăng xuất</a>
+                    <details class="acc-menu">
+                        <summary>@Session["FullName"]</summary>
+                        <div class="acc-pop">
+                            <a href="/Home/TaiKhoan">Tài khoản của tôi</a>
+                            <a href="/Home/Lichsumuahang">Lịch sử mua hàng</a>
+                            <a href="/Home/DoiMatKhau">Đổi mật khẩu</a>
+                            @if ((string)Session["Role"] == "Admin")
+                            {
+                                <a href="/Admin/SanPham">Trang quản trị</a>
+                            }
+                            <a href="/Home/DangXuat">Đăng xuất</a>
+                        </div>
+                    </details>
                 }
                 else
                 {
-                    <a href="/Home/Dangnhap">Đăng nhập</a>
+                    <a class="acc-link" href="/Home/Dangnhap">Đăng nhập</a>
+                    <a class="acc-link" href="/Home/Dangky">Đăng ký</a>
                 }
+
                 <a href="/Home/Giohang" class="cart">
                     <img src="~/Content/image/cart.jpg" class="cart-icon" alt="Giỏ hàng">
                     <span class="cart-count" id="cartCount"></span>
                 </a>
-            </nav>
+            </div>
         </div>
     </header>
 
     <div class="container main-content">
         <div class="store-shell">
-
-            <!-- ASIDE DANH MỤC -->
-            <aside class="category-panel" id="categories">
-                <h3>Danh mục</h3>
-                <ul class="category-list">
-                    <li><a href="/Home/Index" class="@act("Index")">Trang chủ</a></li>
-                </ul>
-                <div class="category-group">Hãng giày</div>
-                <ul class="category-list">
-                    <li><a href="/Home/Nike" class="@act("Nike")">Nike</a></li>
-                    <li><a href="/Home/Adidas" class="@act("Adidas")">Adidas</a></li>
-                    <li><a href="/Home/Biti" class="@act("Biti")">Biti's</a></li>
-                    <li><a href="/Home/Asics" class="@act("Asics")">Asics</a></li>
-                    <li><a href="/Home/Puma" class="@act("Puma")">Puma</a></li>
-                </ul>
-                <div class="category-group">Tài khoản</div>
-                <ul class="category-list">
-                    @if (Session["UserID"] != null)
-                    {
-                        <li><a href="/Home/TaiKhoan" class="@act("TaiKhoan")">Thông tin tài khoản</a></li>
-                        <li><a href="/Home/DoiMatKhau" class="@act("DoiMatKhau")">Đổi mật khẩu</a></li>
-                        <li><a href="/Home/DangXuat">Đăng xuất</a></li>
-                    }
-                    else
-                    {
-                        <li><a href="/Home/Dangnhap" class="@act("Dangnhap")">Đăng nhập</a></li>
-                        <li><a href="/Home/Dangky" class="@act("Dangky")">Đăng ký</a></li>
-                    }
-                    <li><a href="/Home/Giohang" class="@act("Giohang")">Giỏ hàng</a></li>
-                    <li><a href="/Home/Lichsumuahang" class="@act("Lichsumuahang")">Lịch sử mua hàng</a></li>
-                </ul>
-                @if ((string)Session["Role"] == "Admin")
-                {
-                    <div class="category-group">Quản trị</div>
-                    <ul class="category-list">
-                        <li><a href="/Admin/SanPham" class="@act("SanPham")">Quản lý kho hàng</a></li>
-                        <li><a href="/Admin/NguoiDung" class="@act("NguoiDung")">Quản lý người dùng</a></li>
-                    </ul>
-                }
-                <div class="category-note">
-                    <strong>Vận động mỗi ngày</strong>
-                    <p>Chọn đôi giày phù hợp để mỗi bước chân thêm tự tin.</p>
-                </div>
-            </aside>
-
             <!-- NỘI DUNG TỪNG TRANG -->
             <section class="store-content">
                 @RenderBody()

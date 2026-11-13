@@ -42,26 +42,11 @@
             <div id="stockInfo" style="font-size: 14px; font-weight: 600;"></div>
             <p style="color: #666; line-height: 1.6; margin: 0;">Dòng giày quốc dân với thiết kế da trắng cao cấp, bền bỉ và cực kỳ dễ phối đồ.</p>
 
-            <!-- SIZE EU -->
+            <!-- SIZE (lấy từ bảng ProductSize trong CSDL, kèm số lượng còn) -->
             <div>
                 <h4 style="margin: 0 0 8px; font-size: 13px; text-transform: uppercase; color: #64748b;">Chọn Kích Cỡ (Size EU):</h4>
-                <div style="display: flex; gap: 10px;">
-                    <div class="size-box" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700;">39</div>
-                    <div class="size-box active" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700; background: #334155; color: #fff;">40</div>
-                    <div class="size-box" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700;">41</div>
-                    <div class="size-box" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700;">42</div>
-                </div>
-            </div>
-
-            <!-- SIZE US -->
-            <div>
-                <h4 style="margin: 0 0 8px; font-size: 13px; text-transform: uppercase; color: #64748b;">Chọn Kích Cỡ (Size US):</h4>
-                <div style="display: flex; gap: 10px;">
-                    <div class="size-box" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700;">7</div>
-                    <div class="size-box active" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700; background: #334155; color: #fff;">8</div>
-                    <div class="size-box" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700;">9</div>
-                    <div class="size-box" onclick="selectSize(this)" style="border: 1px solid #000; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700;">10</div>
-                </div>
+                <div id="sizeList" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+                <div id="sizeInfo" style="margin-top: 8px; font-size: 13px; font-weight: 600;"></div>
             </div>
 
             <!-- NÚT THÊM GIỎ -->
@@ -156,9 +141,10 @@
         let mainImgPath = sanPhamDangXem.image;
         document.getElementById("mainProductImage").src = mainImgPath;
         document.querySelector(".shoe-name").innerText = sanPhamDangXem.name;
-        document.querySelector(".shoe-price").innerText = sanPhamDangXem.price.toLocaleString("vi-VN") + "đ";
+        document.querySelector(".shoe-price").innerHTML = sanPhamDangXem.price.toLocaleString("vi-VN") + "đ" +
+            (sanPhamDangXem.discount > 0 ? ' <del style="font-size:16px;color:#94a3b8;font-weight:400">' + sanPhamDangXem.oldPrice.toLocaleString("vi-VN") + 'đ</del> <span style="background:#dc2626;color:#fff;font-size:13px;padding:2px 8px;border-radius:8px">-' + sanPhamDangXem.discount + '%</span>' : "");
 
-        // Tồn kho từ CSDL: hết hàng thì khóa nút thêm giỏ
+        // Tồn kho từ CSDL theo từng size: size hết hàng thì khóa, chưa chọn size thì không thêm giỏ được
         let info = document.getElementById("stockInfo");
         let btn = document.getElementById("btnThemGio");
         if (sanPhamDangXem.stock > 0) {
@@ -172,6 +158,7 @@
             btn.style.background = "#94a3b8";
             btn.style.cursor = "not-allowed";
         }
+        veSize();
 
         let lastDot = mainImgPath.lastIndexOf('.');
         if (lastDot > 0) {
@@ -222,24 +209,56 @@
         document.getElementById('thumbnailContainer').scrollLeft += dir * 100;
     }
 
+    let sizeDangChon = null;
+
+    function veSize() {
+        let box = document.getElementById("sizeList");
+        let ds = (sanPhamDangXem.sizes || []);
+        if (ds.length === 0) { box.innerHTML = "<em>Chưa có size</em>"; return; }
+        box.innerHTML = ds.map(function (z) {
+            let het = z.qty <= 0;
+            return '<div class="size-box" data-size="' + z.size + '" data-qty="' + z.qty + '"' + (het ? '' : ' onclick="selectSize(this)"') +
+                ' style="border: 1px solid ' + (het ? '#cbd5e1' : '#000') + '; border-radius: 10px; padding: 8px 16px; font-weight: 700; ' +
+                (het ? 'color:#94a3b8;background:#f1f5f9;text-decoration:line-through;cursor:not-allowed;' : 'cursor:pointer;') + '">' + z.size + '</div>';
+        }).join("");
+    }
+
     function selectSize(el) {
         document.querySelectorAll('.size-box').forEach(b => {
             b.classList.remove('active');
-            b.style.background = '#fff';
-            b.style.color = '#000';
+            if (b.dataset.qty > 0) { b.style.background = '#fff'; b.style.color = '#000'; }
         });
         el.classList.add('active');
         el.style.background = '#334155';
         el.style.color = '#fff';
+        sizeDangChon = { size: el.dataset.size, qty: parseInt(el.dataset.qty, 10) };
+        let si = document.getElementById("sizeInfo");
+        si.innerText = "Size " + sizeDangChon.size + ": còn " + sizeDangChon.qty + " sản phẩm";
+        si.style.color = "#16a34a";
     }
 
     function themVaoGio() {
         if (!sanPhamDangXem || sanPhamDangXem.stock <= 0) return;
-        let activeSize = document.querySelector('.size-box.active')?.innerText || "40";
-        let gioHang = JSON.parse(localStorage.getItem("cart")) || [];
-        gioHang.push({ id: sanPhamDangXem.id, name: sanPhamDangXem.name, price: sanPhamDangXem.price, image: sanPhamDangXem.image, size: activeSize, quantity: 1 });
+        let si = document.getElementById("sizeInfo");
+        if (!sizeDangChon) {
+            si.innerText = "Vui lòng chọn size trước khi thêm vào giỏ hàng.";
+            si.style.color = "#dc2626";
+            return;
+        }
+        let gioHang = [];
+        try { gioHang = JSON.parse(localStorage.getItem("cart")) || []; } catch (e) { gioHang = []; }
+
+        // Cùng sản phẩm + cùng size thì cộng dồn số lượng, nhưng không vượt tồn kho của size đó
+        let dong = gioHang.find(g => g.id === sanPhamDangXem.id && g.size === sizeDangChon.size);
+        let daCo = dong ? dong.quantity : 0;
+        if (daCo + 1 > sizeDangChon.qty) {
+            si.innerText = "Size " + sizeDangChon.size + " chỉ còn " + sizeDangChon.qty + " sản phẩm (trong giỏ bạn đã có " + daCo + ").";
+            si.style.color = "#dc2626";
+            return;
+        }
+        if (dong) { dong.quantity += 1; dong.max = sizeDangChon.qty; dong.price = sanPhamDangXem.price; }
+        else gioHang.push({ id: sanPhamDangXem.id, name: sanPhamDangXem.name, price: sanPhamDangXem.price, image: sanPhamDangXem.image, size: sizeDangChon.size, quantity: 1, max: sizeDangChon.qty });
         localStorage.setItem("cart", JSON.stringify(gioHang));
-        alert("Đã thêm sản phẩm vào giỏ hàng!");
         window.location.href = "/Home/GioHang";
     }
 </script>

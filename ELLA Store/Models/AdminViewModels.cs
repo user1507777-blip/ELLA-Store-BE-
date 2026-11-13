@@ -13,6 +13,7 @@ namespace ELLA_Store.Models
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsCurrentUser { get; set; }   // chính tài khoản đang đăng nhập
+        public bool IsProtected { get; set; }     // admin gốc: không được xóa/khóa
     }
 
     // Form thêm quản trị viên
@@ -32,7 +33,7 @@ namespace ELLA_Store.Models
         [StringLength(100, ErrorMessage = "Email tối đa 100 ký tự")]
         public string Email { get; set; }
 
-        [RegularExpression(@"^(0\d{9,10})?$", ErrorMessage = "Số điện thoại gồm 10-11 chữ số, bắt đầu bằng 0")]
+        [RegularExpression(@"^((03|05|07|08|09)\d{8})?$", ErrorMessage = "Số điện thoại gồm đúng 10 số, bắt đầu bằng 03, 05, 07, 08 hoặc 09 (ví dụ 0912345678)")]
         [Display(Name = "Số điện thoại")]
         public string Phone { get; set; }
 
@@ -63,7 +64,7 @@ namespace ELLA_Store.Models
         [StringLength(100, ErrorMessage = "Email tối đa 100 ký tự")]
         public string Email { get; set; }
 
-        [RegularExpression(@"^(0\d{9,10})?$", ErrorMessage = "Số điện thoại gồm 10-11 chữ số, bắt đầu bằng 0")]
+        [RegularExpression(@"^((03|05|07|08|09)\d{8})?$", ErrorMessage = "Số điện thoại gồm đúng 10 số, bắt đầu bằng 03, 05, 07, 08 hoặc 09 (ví dụ 0912345678)")]
         [Display(Name = "Số điện thoại")]
         public string Phone { get; set; }
 

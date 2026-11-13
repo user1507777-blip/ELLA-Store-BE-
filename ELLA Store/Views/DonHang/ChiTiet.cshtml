@@ -3,6 +3,8 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewBag.Title = "Chi tiết đơn hàng #" + Model.OrderID;
     var tiepTheo = ELLA_Store.Models.OrderStatus.NextOf(Model.Status);
+    string thongDiepHuy = "Hủy đơn này? Tồn kho sẽ được hoàn lại"
+        + (Model.PaymentStatus == ELLA_Store.Models.PayStatus.DaThanhToan ? " và đơn sẽ chuyển sang chờ hoàn tiền" : "") + ".";
     bool coVoucher = Session["DiscountAmount"] != null;
     decimal giamGia = coVoucher ? (decimal)Session["DiscountAmount"] : 0m;
     decimal sauGiam = Model.TotalPrice - giamGia;
@@ -79,6 +81,10 @@
                         <span style="display: inline-block; padding: 2px 8px; background-color: #f1f5f9; border-radius: 4px; color: #0f172a; font-weight: 600; font-size: 12px;">@Model.PaymentMethod</span>
                     </div>
                     <div>
+                        <small style="color: #94a3b8; display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;">Tình trạng thu tiền</small>
+                        <span class="st @ELLA_Store.Models.PayStatus.CssClass(Model.PaymentStatus)">@Model.PaymentStatus</span>
+                    </div>
+                    <div>
                         <small style="color: #94a3b8; display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;">Người nhận</small>
                         <span style="color: #334155;">@Model.Receiver &ndash; @Model.Phone</span>
                     </div>
@@ -107,37 +113,73 @@
         @Html.Partial("_DanhSachChiTiet", Model)
     </div>
 
-    <!-- KHU VỰC CẬP NHẬT TRẠNG THÁI CHO ADMIN -->
+    <!-- KHU VỰC XỬ LÝ ĐƠN HÀNG (ADMIN) -->
     <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.01);">
         <h5 style="font-size: 14px; font-weight: 700; color: #0f172a; margin-top: 0; margin-bottom: 14px;">
             <i class="fa-solid fa-sliders" style="margin-right: 6px; color:#64748b;"></i> Xử lý đơn hàng
         </h5>
+
         @if (tiepTheo.Length > 0)
         {
-            <div style="display:flex; gap:10px; flex-wrap: wrap;">
-                @foreach (var st in tiepTheo)
-                {
-                    bool huy = st == ELLA_Store.Models.OrderStatus.DaHuy;
-                    string icon = huy ? "fa-regular fa-circle-xmark" : (st == ELLA_Store.Models.OrderStatus.DangGiao ? "fa-solid fa-truck" : "fa-solid fa-check");
-                    string kieu = huy
-                        ? "padding: 8px 18px; background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;"
-                        : "padding: 8px 18px; background-color: #2563eb; color: #ffffff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;";
-                    <form method="post" action="/DonHang/DoiTrangThai" style="margin:0;"
-                          @Html.Raw(huy ? "onsubmit=\"return confirm('Hủy đơn này? Tồn kho sẽ được hoàn lại.');\"" : "")>
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@Model.OrderID" />
-                        <input type="hidden" name="trangThaiMoi" value="@st" />
-                        <button type="submit" style="@kieu">
-                            <i class="@icon" style="margin-right: 6px;"></i> @(huy ? "Hủy đơn hàng" : "Chuyển sang \"" + st + "\"")
-                        </button>
-                    </form>
-                }
-            </div>
+            @* Đơn chưa kết thúc: chọn trạng thái mới trong danh sách rồi cập nhật *@
+            <form method="post" action="/DonHang/DoiTrangThai" style="margin:0; display:flex; gap:10px; flex-wrap: wrap; align-items:center;"
+                  onsubmit="return xacNhanDoiTrangThai(this);">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.OrderID" />
+                <label for="trangThaiMoi" style="font-size: 13px; color:#475569; font-weight:600;">Chuyển sang trạng thái:</label>
+                <select name="trangThaiMoi" id="trangThaiMoi" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; min-width: 200px;">
+                    @foreach (var st in tiepTheo)
+                    {
+                        <option value="@st">@st</option>
+                    }
+                </select>
+                <button type="submit" style="padding: 8px 18px; background-color: #2563eb; color: #ffffff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">
+                    <i class="fa-solid fa-check" style="margin-right: 6px;"></i> Cập nhật trạng thái
+                </button>
+            </form>
         }
         else
         {
-            <p style="color:#64748b; margin:0;">Đơn đã ở trạng thái cuối, không thể thay đổi.</p>
+            @* Đã kết thúc (Hoàn thành / Đã hủy): không hiện nút chỉnh sửa trạng thái nữa *@
+            <p style="color:#64748b; margin:0;">
+                <i class="fa-solid fa-lock" style="margin-right: 6px;"></i>
+                Đơn đã kết thúc (<strong>@Model.Status</strong>), không thể thay đổi trạng thái.
+            </p>
+        }
+
+        @if (Model.PaymentStatus == ELLA_Store.Models.PayStatus.ChoHoanTien)
+        {
+            <div style="margin-top: 16px; padding: 14px 16px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px;">
+                <p style="margin: 0 0 10px; color: #b91c1c; font-weight: 600;">
+                    Đơn đã hủy nhưng khách đã thanh toán trước. Cần hoàn @Model.TotalPrice.ToString("#,##0")đ cho khách.
+                </p>
+                <form method="post" action="/DonHang/XacNhanHoanTien" style="margin:0;" onsubmit="return confirm('Xác nhận đã hoàn tiền cho khách?');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.OrderID" />
+                    <button type="submit" style="padding: 8px 18px; background-color: #dc2626; color: #ffffff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">
+                        <i class="fa-solid fa-rotate-left" style="margin-right: 6px;"></i> Xác nhận đã hoàn tiền
+                    </button>
+                </form>
+            </div>
+        }
+        else if (Model.PaymentStatus == ELLA_Store.Models.PayStatus.DaHoanTien)
+        {
+            <p style="margin: 14px 0 0; color: #1e40af; font-weight: 600;">Đã hoàn tiền cho khách.</p>
         }
     </div>
 
 </div>
+
+<script>
+    // Hỏi lại trước khi hủy / hoàn thành đơn (hai trạng thái kết thúc, không đổi lại được)
+    function xacNhanDoiTrangThai(form) {
+        var v = form.trangThaiMoi.value;
+        if (v === @Html.Raw(Json.Encode(ELLA_Store.Models.OrderStatus.DaHuy))) {
+            return confirm(@Html.Raw(Json.Encode(thongDiepHuy)));
+        }
+        if (v === @Html.Raw(Json.Encode(ELLA_Store.Models.OrderStatus.HoanThanh))) {
+            return confirm("Hoàn thành đơn? Sau đó không thể đổi trạng thái nữa.");
+        }
+        return true;
+    }
+</script>

@@ -32,6 +32,8 @@ namespace ELLA_Store.Data
         public string PaymentMethod { get; set; }
         public decimal ShippingFee { get; set; }
         public string OrderStatus { get; set; }
+        public string VoucherCode { get; set; }
+        public decimal DiscountAmount { get; set; }
     
         public virtual Customer Customer { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

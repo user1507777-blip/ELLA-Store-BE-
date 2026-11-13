@@ -1,0 +1,52 @@
+﻿@model ELLA_Store.Models.Voucher
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = ViewBag.TieuDe;
+    bool sua = Model.VoucherID > 0;
+}
+
+<div class="container-custom">
+    <h2>@ViewBag.TieuDe</h2>
+    <div class="auth-box" style="max-width:560px;">
+        <form method="post" action="@(sua ? "/Voucher/Sua" : "/Voucher/Them")">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="VoucherID" value="@Model.VoucherID">
+
+            <div class="form-group">
+                <div style="font-size:13px;font-weight:700;color:#334155;">Mã voucher *</div>
+                <input type="text" name="Code" value="@Model.Code" maxlength="30" class="form-control" placeholder="Ví dụ: SALE50 hoặc VUICUNGMUASAM">
+                <span class="error-msg">@Html.ValidationMessage("Code")</span>
+            </div>
+            <div class="form-group">
+                <div style="font-size:13px;font-weight:700;color:#334155;">Phần trăm giảm (1 - 90) *</div>
+                <input type="number" name="DiscountPercent" value="@Model.DiscountPercent" min="1" max="90" class="form-control" placeholder="Ví dụ: 20">
+                <span class="error-msg">@Html.ValidationMessage("DiscountPercent")</span>
+            </div>
+            <div class="form-group">
+                <div style="font-size:13px;font-weight:700;color:#334155;">Mô tả</div>
+                <input type="text" name="Description" value="@Model.Description" maxlength="200" class="form-control" placeholder="Ví dụ: Giảm 50% cho đơn từ 1.000.000đ">
+                <span class="error-msg">@Html.ValidationMessage("Description")</span>
+            </div>
+            <div class="form-group">
+                <div style="font-size:13px;font-weight:700;color:#334155;">Đơn tối thiểu (đ, 0 = không yêu cầu)</div>
+                <input type="number" name="MinOrder" value="@Model.MinOrder.ToString("0")" min="0" class="form-control" placeholder="Ví dụ: 1000000">
+                <span class="error-msg">@Html.ValidationMessage("MinOrder")</span>
+            </div>
+            <div class="form-group">
+                <div style="font-size:13px;font-weight:700;color:#334155;">Hạn dùng (để trống = không giới hạn)</div>
+                <input type="date" name="ExpiryDate" value="@(Model.ExpiryDate.HasValue ? Model.ExpiryDate.Value.ToString("yyyy-MM-dd") : "")" class="form-control">
+                <span class="error-msg">@Html.ValidationMessage("ExpiryDate")</span>
+            </div>
+            <div class="form-group">
+                <div style="font-size:13px;font-weight:700;color:#334155;">
+                    <input type="checkbox" name="IsActive" value="true" @(Model.IsActive ? "checked" : "") style="width:auto;margin-right:6px;">
+                    <input type="hidden" name="IsActive" value="false">
+                    Đang áp dụng
+                </div>
+            </div>
+
+            <button type="submit" class="btn">@(sua ? "Lưu thay đổi" : "Thêm voucher")</button>
+            <a href="/Voucher" style="margin-left:12px;">Quay lại</a>
+        </form>
+    </div>
+</div>

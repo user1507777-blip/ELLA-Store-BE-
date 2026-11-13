@@ -1,13 +1,29 @@
-﻿<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.Title</title>
-</head>
-<body>
-    <div>
-        @RenderBody()
+﻿@model ELLA_Store.Models.Product
+@* Partial dùng chung: hiển thị chi tiết một sản phẩm (không có nút MUA HÀNG).
+   Dùng cho trang quản trị:  @Html.Partial("_ChiTietSanPham", product)
+   và có thể nhúng vào trang chi tiết phía khách hàng bằng đúng dòng đó. *@
+<div class="detail-wrapper">
+    <div class="detail-image">
+        <img src="@Url.Content("~/Content/image/" + Model.ImagePro)" alt="@Model.NamePro">
     </div>
-</body>
-</html>
+    <div class="detail-info">
+        <h2 class="shoe-name">@Model.NamePro</h2>
+        <div class="shoe-price">
+            @if (Model.IsSale)
+            {
+                <s style="color:#94a3b8;font-size:0.7em;">@Model.Price.ToString("#,##0")đ</s>
+                @Model.SalePrice.ToString("#,##0")<text>đ</text>
+                <span style="font-size:0.6em;color:#b91c1c;">(-@Model.DiscountPercent%)</span>
+            }
+            else
+            {
+                @Model.Price.ToString("#,##0")<text>đ</text>
+            }
+        </div>
+        <p style="color:#666;line-height:1.6;">
+            Danh mục: <strong>@Model.CategoryName</strong><br>
+            Mã sản phẩm: @Model.ProductID<br>
+            Tồn kho: <strong>@Model.Stock</strong>
+        </p>
+    </div>
+</div>

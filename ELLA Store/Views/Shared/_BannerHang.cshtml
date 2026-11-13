@@ -1,0 +1,150 @@
+﻿@* Banner đầu trang từng hãng giày, có video nền riêng cho mỗi hãng.
+    Trang hãng gán ViewBag.BannerSlogan / BannerMoTa / BannerAnh / BannerVideo trước khi gọi.
+    Video nằm ở Content/video/<tên>.mp4. Chưa có video thì hiện ảnh (nếu có BannerAnh) hoặc nền đen. BannerAnh không bắt buộc. *@
+@model ELLA_Store.Models.PagedProductsViewModel
+@{
+    string slogan = ViewBag.BannerSlogan as string ?? "";
+    string moTa = ViewBag.BannerMoTa as string ?? "";
+    string anh = (ViewBag.BannerAnh as string) ?? "";   // ảnh dự phòng, không bắt buộc
+    string video = ViewBag.BannerVideo as string ?? "";
+    string duongDanVideo = string.IsNullOrEmpty(video) ? null : "~/Content/video/" + video;
+    bool coVideo = duongDanVideo != null && System.IO.File.Exists(Server.MapPath(duongDanVideo));
+}
+<section class="hang-banner @(coVideo ? "co-video" : "")">
+    @if (coVideo)
+    {
+        <video class="hang-video" muted loop playsinline autoplay preload="metadata"
+               poster="@(anh != "" ? Url.Content("~/Content/image/" + anh) : null)">
+            <source src="@Url.Content(duongDanVideo)" type="video/mp4">
+        </video>
+        <div class="hang-overlay"></div>
+    }
+    <div class="hang-banner-text">
+        <span class="hang-banner-tag">THƯƠNG HIỆU</span>
+        <h2>@Model.Title</h2>
+        <p class="hang-banner-slogan">@slogan</p>
+        <p class="hang-banner-desc">@moTa</p>
+        <a href="#danhSachSanPham" class="btn">Xem @Model.TotalItems sản phẩm &darr;</a>
+    </div>
+    @if (!coVideo && anh != "")
+    {
+        <div class="hang-banner-image">
+            <img src="@Url.Content("~/Content/image/" + anh)" alt="@Model.Title">
+        </div>
+    }
+</section>
+<style>
+    .hang-banner {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        min-height: 260px;
+        margin: 0 0 22px;
+        padding: 28px 36px;
+        border-radius: 16px;
+        color: #fff;
+        overflow: hidden;
+        background: #111827;
+    }
+
+        .hang-banner.co-video {
+            min-height: 380px;
+            padding: 40px 56px;
+        }
+
+    .hang-video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .hang-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right, rgba(17,24,39,.78), rgba(17,24,39,.2) 70%, rgba(17,24,39,0));
+    }
+
+    .hang-banner-text {
+        position: relative;
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hang-banner-tag {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 4px;
+        color: #d1d5db;
+    }
+
+    .hang-banner h2 {
+        margin: 6px 0 4px;
+        font-size: clamp(32px, 4.5vw, 52px);
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+    }
+
+    .hang-banner-slogan {
+        margin: 0 0 8px;
+        font-size: 18px;
+        font-weight: 700;
+        font-style: italic;
+        color: #e5e7eb;
+    }
+
+    .hang-banner-desc {
+        margin: 0 0 18px;
+        max-width: 460px;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #d1d5db;
+    }
+
+    .hang-banner .btn {
+        background: #fff;
+        color: #111827 !important;
+    }
+
+        .hang-banner .btn:hover {
+            background: #dc2626;
+            color: #fff !important;
+        }
+
+    .hang-banner-image {
+        flex: 0 0 280px;
+        height: 220px;
+        border-radius: 16px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .hang-banner-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+    @@media (max-width: 760px) {
+        .hang-banner, .hang-banner.co-video {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 24px;
+            min-height: 300px;
+        }
+
+        .hang-banner-image {
+            flex-basis: auto;
+            width: 100%;
+        }
+    }
+</style>

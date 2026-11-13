@@ -2,9 +2,13 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Nike";
+    ViewBag.BannerSlogan = "Just Do It";
+    ViewBag.BannerMoTa = "Giày thể thao và sneaker Nike: êm, bền, dẫn đầu xu hướng từ sân tập đến đường phố.";
+    ViewBag.BannerVideo = "nike.mp4";
 }
 
 <div class="container-custom">
-    <div class="section-title">Nike</div>
+    @Html.Partial("_BannerHang", Model)
+    <div id="danhSachSanPham" class="section-title">Nike</div>
     @Html.Partial("_DanhSachSanPham", Model)
 </div>

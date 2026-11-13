@@ -1,0 +1,121 @@
+﻿@model System.Collections.Generic.List<ELLA_Store.Models.Voucher>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Quản lý voucher";
+}
+
+<style>
+    .voucher-table th, .voucher-table td {
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+        .voucher-table td.vc-desc {
+            white-space: normal;
+            min-width: 200px;
+            max-width: 320px;
+        }
+
+    .voucher-table .st {
+        white-space: nowrap;
+    }
+
+    .voucher-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .voucher-actions .admin-inline {
+            margin: 0;
+        }
+
+        .voucher-actions a {
+            font-weight: 600;
+            text-decoration: none;
+            padding: 4px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            color: #111827;
+        }
+
+            .voucher-actions a:hover {
+                border-color: #111827;
+            }
+</style>
+
+<div class="container-custom">
+    <h2>Quản Lý Voucher</h2>
+
+    @if (TempData["ThongBao"] != null)
+    {<p class="success-msg">@TempData["ThongBao"]</p>}
+    @if (TempData["Loi"] != null)
+    {<p class="error-msg">@TempData["Loi"]</p>}
+
+    <p style="font-size:13px;color:#64748b;">
+        Voucher giảm theo <strong>phần trăm</strong>. Khách nhập mã ở trang đặt hàng; admin cũng chọn mã ở trang
+        <a href="/ThongKe">Thống kê doanh thu</a> để giảm giá cho sản phẩm bán chậm.
+    </p>
+
+    <div class="admin-toolbar">
+        <a href="/Voucher/Them" class="btn">+ Thêm voucher</a>
+    </div>
+
+    <table class="order-table voucher-table">
+        <thead>
+            <tr>
+                <th>Mã</th>
+                <th>Giảm</th>
+                <th>Mô tả</th>
+                <th>Tối thiểu</th>
+                <th>Hạn dùng</th>
+                <th>Trạng thái</th>
+                <th>Đã dùng</th>
+                <th>Đã giảm</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var v in Model)
+            {
+                <tr>
+                    <td><strong>@v.Code</strong></td>
+                    <td>@v.DiscountPercent%</td>
+                    <td class="vc-desc">@v.Description</td>
+                    <td>@(v.MinOrder > 0 ? v.MinOrder.ToString("#,##0") + "đ" : "Không")</td>
+                    <td>@(v.ExpiryDate.HasValue ? v.ExpiryDate.Value.ToString("dd/MM/yyyy") : "Không hạn")</td>
+                    <td>
+                        @if (v.IsExpired)
+                        {<span class="st st-huy">Hết hạn</span> }
+                        else if (v.IsActive)
+                        { <span class="st st-xong">Đang áp dụng</span> }
+                        else
+                        { <span class="st st-cho">Tạm ngưng</span>}
+                    </td>
+                    <td>@v.UsedCount đơn</td>
+                    <td>@v.TotalDiscount.ToString("#,##0")đ</td>
+                    <td>
+                        <div class="voucher-actions">
+                            <a href="/Voucher/Sua/@v.VoucherID">Sửa</a>
+                            <form method="post" action="/Voucher/BatTat" class="admin-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@v.VoucherID">
+                                <input type="hidden" name="bat" value="@(v.IsActive ? "false" : "true")">
+                                <button type="submit">@(v.IsActive ? "Tạm ngưng" : "Bật")</button>
+                            </form>
+                            <form method="post" action="/Voucher/Xoa" class="admin-inline" onsubmit="return confirm('Xóa voucher @v.Code?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@v.VoucherID">
+                                <button type="submit" style="background:#b91c1c;">Xóa</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="9" style="text-align:center;">Chưa có voucher nào.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

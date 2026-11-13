@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="a690023d160040b7ad81894882d4c973" Name="Diagram1" ZoomLevel="72">
+      <Diagram DiagramId="a690023d160040b7ad81894882d4c973" Name="Diagram1" ZoomLevel="69">
         <EntityTypeShape EntityType="MyStoreModel.Category" Width="1.5" PointX="2.125" PointY="1.5" IsExpanded="true" />
         <EntityTypeShape EntityType="MyStoreModel.Customer" Width="1.5" PointX="5.75" PointY="5.25" IsExpanded="true" />
         <EntityTypeShape EntityType="MyStoreModel.Order" Width="1.5" PointX="9.25" PointY="4.375" IsExpanded="true" />
@@ -16,6 +16,14 @@
         <AssociationConnector Association="MyStoreModel.FK_User_Customer" ManuallyRouted="false" />
         <AssociationConnector Association="MyStoreModel.FK_OD_Order" ManuallyRouted="false" />
         <AssociationConnector Association="MyStoreModel.FK_OD_Product" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="MyStoreModel.ProductSize" Width="1.5" PointX="8.125" PointY="9" />
+        <EntityTypeShape EntityType="MyStoreModel.Size" Width="1.5" PointX="0.75" PointY="11.125" />
+        <EntityTypeShape EntityType="MyStoreModel.StockMovement" Width="1.5" PointX="12.125" PointY="5.5" />
+        <AssociationConnector Association="MyStoreModel.FK_PS_Product" />
+        <AssociationConnector Association="MyStoreModel.FK_SM_Product" />
+        <AssociationConnector Association="MyStoreModel.FK_PS_Size" />
+        <AssociationConnector Association="MyStoreModel.FK_SM_Size" />
+        <EntityTypeShape EntityType="MyStoreModel.Voucher" Width="1.5" PointX="3.375" PointY="8.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -16,39 +16,39 @@ namespace ELLA_Store.Controllers
         }
 
         // GET: Home/Adidas?keyword=&minPrice=&maxPrice=&sortOrder=&page=
-        public ActionResult Adidas(string keyword, decimal? minPrice, decimal? maxPrice, string sortOrder, int page = 1)
+        public ActionResult Adidas(string keyword, decimal? minPrice, decimal? maxPrice, string sortOrder, string tieuChi = null, int page = 1)
         {
-            return DanhSachTheoHang("Adidas", "Adidas", keyword, minPrice, maxPrice, sortOrder, page);
+            return DanhSachTheoHang("Adidas", "Adidas", keyword, minPrice, maxPrice, sortOrder, tieuChi, page);
         }
 
         // GET: Home/Asics
-        public ActionResult Asics(string keyword, decimal? minPrice, decimal? maxPrice, string sortOrder, int page = 1)
+        public ActionResult Asics(string keyword, decimal? minPrice, decimal? maxPrice, string sortOrder, string tieuChi = null, int page = 1)
         {
-            return DanhSachTheoHang("Asics", "Asics", keyword, minPrice, maxPrice, sortOrder, page);
+            return DanhSachTheoHang("Asics", "Asics", keyword, minPrice, maxPrice, sortOrder, tieuChi, page);
         }
 
         // GET: Home/Biti
-        public ActionResult Biti(string keyword, decimal? minPrice, decimal? maxPrice, string sortOrder, int page = 1)
+        public ActionResult Biti(string keyword, decimal? minPrice, decimal? maxPrice, string sortOrder, string tieuChi = null, int page = 1)
         {
-            return DanhSachTheoHang("Biti", "Biti's", keyword, minPrice, maxPrice, sortOrder, page);
+            return DanhSachTheoHang("Biti", "Biti's", keyword, minPrice, maxPrice, sortOrder, tieuChi, page);
         }
 
         // GET: Home/Nike
-        public ActionResult Nike(string keyword, decimal? minPrice, decimal? maxPrice, string sortOrder, int page = 1)
+        public ActionResult Nike(string keyword, decimal? minPrice, decimal? maxPrice, string sortOrder, string tieuChi = null, int page = 1)
         {
-            return DanhSachTheoHang("Nike", "Nike", keyword, minPrice, maxPrice, sortOrder, page);
+            return DanhSachTheoHang("Nike", "Nike", keyword, minPrice, maxPrice, sortOrder, tieuChi, page);
         }
 
         // GET: Home/Puma
-        public ActionResult Puma(string keyword, decimal? minPrice, decimal? maxPrice, string sortOrder, int page = 1)
+        public ActionResult Puma(string keyword, decimal? minPrice, decimal? maxPrice, string sortOrder, string tieuChi = null, int page = 1)
         {
-            return DanhSachTheoHang("Puma", "Puma", keyword, minPrice, maxPrice, sortOrder, page);
+            return DanhSachTheoHang("Puma", "Puma", keyword, minPrice, maxPrice, sortOrder, tieuChi, page);
         }
 
         // GET: Home/TimKiem?keyword=...  (ô tìm kiếm ở đầu trang: tìm sản phẩm trong CSDL, mọi hãng, có phân trang)
-        public ActionResult TimKiem(string keyword, decimal? minPrice, decimal? maxPrice, string sortOrder, int page = 1)
+        public ActionResult TimKiem(string keyword, decimal? minPrice, decimal? maxPrice, string sortOrder, string tieuChi = null, int page = 1)
         {
-            return DanhSachTheoHang("TimKiem", null, keyword, minPrice, maxPrice, sortOrder, page);
+            return DanhSachTheoHang("TimKiem", null, keyword, minPrice, maxPrice, sortOrder, tieuChi, page);
         }
 
         public ActionResult ChiTietSanPham(int? id)
@@ -59,10 +59,14 @@ namespace ELLA_Store.Controllers
             {
                 id = p.ProductID.ToString(),
                 name = p.NamePro,
-                price = p.Price,
+                price = p.SalePrice,          // giá bán thực tế (đã trừ giảm giá)
+                oldPrice = p.Price,           // giá gốc
+                discount = p.DiscountPercent,
+                bestSeller = p.IsBestSeller,
                 image = Url.Content("~/Content/image/" + p.ImagePro),
                 brand = p.CategoryName,
-                stock = p.Stock
+                stock = p.Stock,
+                sizes = p.Sizes.Select(z => new { size = z.Size, qty = z.Quantity })
             });
             ViewBag.SanPhamJson = JsonConvert.SerializeObject(ds,
                 new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml });
@@ -74,9 +78,159 @@ namespace ELLA_Store.Controllers
             return View();
         }
 
+        // Đặt hàng phải đăng nhập: chưa đăng nhập thì chuyển sang trang Đăng nhập, xong quay lại đây.
+        [LoginRequired]
         public ActionResult DatHang()
         {
+            var c = UserStore.FindCustomerByUsername((string)Session["Username"]);
+            ViewBag.HoTen = c != null ? c.FullName : (string)Session["FullName"];
+            ViewBag.Sdt = c != null ? c.Phone : "";
+            ViewBag.Email = c != null ? c.Email : "";
+            ViewBag.DiaChi = c != null ? c.Address : "";
             return View();
+        }
+
+        // Một dòng trong giỏ hàng do trang đặt hàng gửi lên (JSON).
+        private class DongGioHang
+        {
+            public string id { get; set; }
+            public string name { get; set; }
+            public string size { get; set; }
+            public int quantity { get; set; }
+        }
+
+        // POST: Home/TaoDonHang - khách bấm "Xác nhận đặt hàng": lưu đơn vào database (Order + OrderDetail),
+        // trừ tồn kho, lấy giá thật từ database. Đơn hiện ngay ở trang Quản lý đơn hàng của Admin.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult TaoDonHang(string items, string hoTen, string sdt, string email, string diaChi, string phuongThuc, string voucherCode)
+        {
+            if (Session["UserID"] == null)
+                return Json(new { ok = false, needLogin = true, message = "Vui lòng đăng nhập để đặt hàng." });
+
+            // Kiểm tra dữ liệu người nhận (cả phía server, phòng khi bỏ qua kiểm tra trên trình duyệt)
+            string loiNhap = KiemTraNguoiNhan(hoTen, sdt, email, diaChi);
+            if (loiNhap != null) return Json(new { ok = false, message = loiNhap });
+
+            System.Collections.Generic.List<DongGioHang> gio;
+            try { gio = JsonConvert.DeserializeObject<System.Collections.Generic.List<DongGioHang>>(items ?? ""); }
+            catch { gio = null; }
+            if (gio == null || gio.Count == 0)
+                return Json(new { ok = false, message = "Giỏ hàng đang trống." });
+
+            var dsSp = ProductStore.All();
+            var order = new Order
+            {
+                Receiver = hoTen.Trim(),
+                Phone = sdt.Trim().Replace(" ", ""),
+                Email = string.IsNullOrWhiteSpace(email) ? null : email.Trim(),
+                Address = diaChi.Trim(),
+                PaymentMethod = phuongThuc == "Chuyển khoản" ? "Chuyển khoản" : "COD",
+                VoucherCode = string.IsNullOrWhiteSpace(voucherCode) ? null : voucherCode.Trim()
+            };
+
+            // Đã đăng nhập thì gắn đơn vào hồ sơ khách hàng (để xem trong "Tài khoản của tôi")
+            if (Session["Username"] != null)
+            {
+                var c = UserStore.FindCustomerByUsername((string)Session["Username"]);
+                if (c != null) order.CustomerID = c.CustomerID;
+            }
+
+            foreach (var g in gio)
+            {
+                int pid;
+                Product sp = null;
+                if (int.TryParse(g.id, out pid)) sp = dsSp.FirstOrDefault(p => p.ProductID == pid);
+                if (sp == null && !string.IsNullOrEmpty(g.name))      // giỏ cũ chưa có mã sản phẩm: tìm theo tên
+                    sp = dsSp.FirstOrDefault(p => p.NamePro == g.name);
+                if (sp == null)
+                    return Json(new { ok = false, message = "Sản phẩm \"" + g.name + "\" không còn trong cửa hàng." });
+                order.Items.Add(new OrderItem { ProductID = sp.ProductID, ProductName = sp.NamePro, Size = g.size, Quantity = g.quantity });
+            }
+
+            string loi;
+            if (!OrderStore.Place(order, out loi))
+                return Json(new { ok = false, message = loi });
+
+            return Json(new
+            {
+                ok = true,
+                order = new
+                {
+                    id = order.OrderID,
+                    date = order.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
+                    receiver = order.Receiver,
+                    phone = order.Phone,
+                    email = order.Email,
+                    address = order.Address,
+                    paymentMethod = order.PaymentMethod,
+                    paymentStatus = order.PaymentStatus,
+                    shipping = order.ShippingFee,
+                    subtotal = order.SubTotal,
+                    voucherCode = order.VoucherCode,
+                    discount = order.DiscountAmount,
+                    total = order.TotalPrice,
+                    items = order.Items.Select(i => new { name = i.ProductName, size = i.Size, quantity = i.Quantity, price = i.UnitPrice })
+                }
+            });
+        }
+
+        // POST: Home/KiemTraVoucher - khách nhập mã ở trang đặt hàng; tính tiền giảm theo giá thật trong database.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult KiemTraVoucher(string items, string ma)
+        {
+            System.Collections.Generic.List<DongGioHang> gio;
+            try { gio = JsonConvert.DeserializeObject<System.Collections.Generic.List<DongGioHang>>(items ?? ""); }
+            catch { gio = null; }
+            if (gio == null || gio.Count == 0)
+                return Json(new { ok = false, message = "Giỏ hàng đang trống." });
+
+            var dsSp = ProductStore.All();
+            decimal tien = 0;
+            foreach (var g in gio)
+            {
+                int pid;
+                Product sp = null;
+                if (int.TryParse(g.id, out pid)) sp = dsSp.FirstOrDefault(p => p.ProductID == pid);
+                if (sp == null && !string.IsNullOrEmpty(g.name)) sp = dsSp.FirstOrDefault(p => p.NamePro == g.name);
+                if (sp == null) continue;
+                tien += sp.SalePrice * g.quantity;
+            }
+
+            Voucher v; decimal giam; string loi;
+            if (!VoucherStore.Check(ma, tien, out v, out giam, out loi))
+                return Json(new { ok = false, message = loi });
+            return Json(new
+            {
+                ok = true,
+                code = v.Code,
+                percent = v.DiscountPercent,
+                discount = giam,
+                subtotal = tien,
+                message = "Đã áp dụng mã " + v.Code + " (giảm " + v.DiscountPercent + "%)."
+            });
+        }
+
+        // Trả về thông báo lỗi đầu tiên, hoặc null nếu hợp lệ.
+        private static string KiemTraNguoiNhan(string hoTen, string sdt, string email, string diaChi)
+        {
+            hoTen = (hoTen ?? "").Trim();
+            sdt = (sdt ?? "").Trim().Replace(" ", "");
+            email = (email ?? "").Trim();
+            diaChi = (diaChi ?? "").Trim();
+
+            if (hoTen.Length < 2 || hoTen.Length > 100)
+                return "Họ tên phải từ 2 đến 100 ký tự.";
+            if (!System.Text.RegularExpressions.Regex.IsMatch(hoTen, @"^[\p{L}][\p{L}\s'.-]*$"))
+                return "Họ tên chỉ gồm chữ cái, không chứa số hoặc ký tự đặc biệt.";
+            if (!System.Text.RegularExpressions.Regex.IsMatch(sdt, @"^(0|\+84)(3|5|7|8|9)\d{8}$"))
+                return "Số điện thoại không hợp lệ (ví dụ 0912345678).";
+            if (email.Length > 0 && !System.Text.RegularExpressions.Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                return "Email không đúng định dạng.";
+            if (diaChi.Length < 10 || diaChi.Length > 200)
+                return "Địa chỉ giao hàng phải từ 10 đến 200 ký tự (số nhà, đường, phường/xã, quận/huyện).";
+            return null;
         }
 
         public ActionResult Bill()
@@ -84,16 +238,44 @@ namespace ELLA_Store.Controllers
             return View();
         }
 
-
-
+        // GET: Home/LichSuMuaHang - các đơn của khách đang đăng nhập (đọc từ database)
+        [LoginRequired]
         public ActionResult LichSuMuaHang()
         {
-            return View();
+            var c = UserStore.FindCustomerByUsername((string)Session["Username"]);
+            var ds = c == null ? new System.Collections.Generic.List<Order>() : OrderStore.OfCustomer(c.CustomerID);
+            return View(ds);
         }
 
-        public ActionResult ChiTietMuaHang()
+        // GET: Home/ChiTietMuaHang/5 - chi tiết một đơn của chính khách đó
+        [LoginRequired]
+        public ActionResult ChiTietMuaHang(int? id)
         {
-            return View();
+            if (id == null) return RedirectToAction("LichSuMuaHang");
+            var c = UserStore.FindCustomerByUsername((string)Session["Username"]);
+            var o = OrderStore.Find(id.Value);
+            if (o == null || c == null || o.CustomerID != c.CustomerID) return HttpNotFound();
+            return View(o);
+        }
+
+
+        // POST: Home/HuyDonHang - khách tự hủy đơn của mình khi đơn còn "Chờ xác nhận"
+        [HttpPost]
+        [LoginRequired]
+        [ValidateAntiForgeryToken]
+        public ActionResult HuyDonHang(int id)
+        {
+            var c = UserStore.FindCustomerByUsername((string)Session["Username"]);
+            string loi;
+            if (c != null && OrderStore.CustomerCancel(id, c.CustomerID, out loi))
+            {
+                var o = OrderStore.Find(id);
+                TempData["ThongBao"] = "Đã hủy đơn #" + id + "."
+                    + (o != null && o.PaymentStatus == PayStatus.ChoHoanTien ? " Bạn đã thanh toán trước nên cửa hàng sẽ hoàn tiền sớm." : "");
+            }
+            else
+                TempData["Loi"] = c == null ? "Không tìm thấy tài khoản." : loi = null;
+            return RedirectToAction("ChiTietMuaHang", new { id });
         }
 
 
@@ -101,7 +283,7 @@ namespace ELLA_Store.Controllers
         private const int PageSize = 6;   // số sản phẩm mỗi trang
 
         private ActionResult DanhSachTheoHang(string viewName, string categoryName, string keyword,
-            decimal? minPrice, decimal? maxPrice, string sortOrder, int page)
+            decimal? minPrice, decimal? maxPrice, string sortOrder, string tieuChi, int page)
         {
             // categoryName == null: tìm trên tất cả các hãng (dùng cho ô tìm kiếm ở header)
             int categoryId = categoryName == null ? 0 : CategoryStore.IdOf(categoryName);
@@ -112,15 +294,21 @@ namespace ELLA_Store.Controllers
                 string k = keyword.Trim();
                 query = query.Where(p => p.NamePro.IndexOf(k, StringComparison.OrdinalIgnoreCase) >= 0);
             }
-            if (minPrice.HasValue) query = query.Where(p => p.Price >= minPrice.Value);
-            if (maxPrice.HasValue) query = query.Where(p => p.Price <= maxPrice.Value);
+            // Lọc theo giá bán thực tế (đã trừ giảm giá)
+            if (minPrice.HasValue) query = query.Where(p => p.SalePrice >= minPrice.Value);
+            if (maxPrice.HasValue) query = query.Where(p => p.SalePrice <= maxPrice.Value);
+            // Tiêu chí: sale / bán chạy / mới / còn hàng
+            query = ProductStore.LocTheoTieuChi(query, tieuChi);
 
             switch (sortOrder)
             {
-                case "price_asc": query = query.OrderBy(p => p.Price); break;
-                case "price_desc": query = query.OrderByDescending(p => p.Price); break;
+                case "price_asc": query = query.OrderBy(p => p.SalePrice); break;
+                case "price_desc": query = query.OrderByDescending(p => p.SalePrice); break;
                 case "name": query = query.OrderBy(p => p.NamePro); break;
-                default: query = query.OrderBy(p => p.ProductID); break;
+                default:
+                    // sale / bán chạy / mới đã tự sắp xếp; còn lại theo mã sản phẩm
+                    if (!ProductStore.TieuChiTuSapXep(tieuChi)) query = query.OrderBy(p => p.ProductID);
+                    break;
             }
 
             var all = query.ToList();
@@ -138,6 +326,7 @@ namespace ELLA_Store.Controllers
                 TotalItems = all.Count,
                 SelectedCategoryId = categoryId,
                 SearchTerm = keyword,
+                Criteria = tieuChi,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
                 SortOrder = sortOrder
@@ -217,10 +406,14 @@ namespace ELLA_Store.Controllers
             Session["UserID"] = user.Username;   // khóa đăng nhập = Username (bảng User dùng Username làm khóa chính)
             Session["Username"] = user.Username;
             Session["Role"] = user.Role;
-            Session["FullName"] = customer != null ? customer.FullName : user.Username;
+            // Khách lấy tên trong hồ sơ khách hàng; quản trị viên lấy họ tên của tài khoản (không có thì dùng tên đăng nhập)
+            Session["FullName"] = customer != null && !string.IsNullOrEmpty(customer.FullName) ? customer.FullName
+                                : !string.IsNullOrWhiteSpace(user.FullName) ? user.FullName
+                                : user.Username;
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
+            if (user.Role == "Admin") return Redirect("/Admin/SanPham");     // quản trị viên vào thẳng khu quản trị
             return RedirectToAction("Index");
         }
 
@@ -239,6 +432,7 @@ namespace ELLA_Store.Controllers
             var c = UserStore.FindCustomerByUsername((string)Session["Username"]);
             if (c == null) return RedirectToAction("Index");   // vd: tài khoản admin không có hồ sơ khách
 
+            NapThongKeTaiKhoan(c);
             return View(new ProfileViewModel
             {
                 Username = (string)Session["Username"],
@@ -268,8 +462,19 @@ namespace ELLA_Store.Controllers
             UserStore.UpdateCustomer(c);
 
             Session["FullName"] = c.FullName;
+            NapThongKeTaiKhoan(c);
             ViewBag.ThongBao = "Đã cập nhật thông tin.";
             return View(model);
+        }
+
+        // Số liệu đơn hàng hiện ở đầu trang "Tài khoản của tôi"
+        private void NapThongKeTaiKhoan(Customer c)
+        {
+            var ds = OrderStore.OfCustomer(c.CustomerID);
+            ViewBag.TongDon = ds.Count;
+            ViewBag.DonDangXuLy = ds.Count(o => !OrderStatus.IsFinal(o.Status));
+            ViewBag.DonHoanThanh = ds.Count(o => o.Status == OrderStatus.HoanThanh);
+            ViewBag.TongChiTieu = ds.Where(o => o.Status == OrderStatus.HoanThanh).Sum(o => o.TotalPrice);
         }
 
         // GET/POST: Home/DoiMatKhau

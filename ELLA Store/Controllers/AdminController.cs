@@ -13,42 +13,45 @@ namespace ELLA_Store.Controllers
     {
         // ======================= QUẢN LÝ KHO HÀNG =======================
 
-        // GET: Admin/SanPham?q=... - thống kê 2 phần: hàng tồn (tồn > 0) và hàng cần nhập (tồn = 0)
-        public ActionResult SanPham(string q)
+        // GET: Admin/SanPham?q=...&tu=...&den=... - kho hàng theo size + thống kê nhập/xuất
+        public ActionResult SanPham(string q, DateTime? tu, DateTime? den, string sx)
         {
             var list = ProductStore.All();
             if (!string.IsNullOrWhiteSpace(q))
                 list = list.Where(p => p.NamePro.IndexOf(q.Trim(), StringComparison.OrdinalIgnoreCase) >= 0).ToList();
 
+            // Sắp xếp: hang (mặc định) = theo hãng rồi A-Z | moi = mới nhất | az = A-Z | ton = tồn ít nhất
+            switch (sx)
+            {
+                case "moi": list = list.OrderByDescending(p => p.ProductID).ToList(); break;
+                case "az": list = list.OrderBy(p => p.NamePro, StringComparer.CurrentCultureIgnoreCase).ToList(); break;
+                case "ton": list = list.OrderBy(p => p.Stock).ThenBy(p => p.NamePro, StringComparer.CurrentCultureIgnoreCase).ToList(); break;
+                default:
+                    sx = "hang";
+                    list = list.OrderBy(p => p.CategoryName, StringComparer.CurrentCultureIgnoreCase)
+                               .ThenBy(p => p.NamePro, StringComparer.CurrentCultureIgnoreCase).ToList();
+                    break;
+            }
+
+            ViewBag.Sx = sx;
             ViewBag.Q = q;
+            ViewBag.Tu = tu;
+            ViewBag.Den = den;
             ViewBag.HangTon = list.Where(p => p.Stock > 0).ToList();
             ViewBag.CanNhap = list.Where(p => p.Stock == 0).ToList();
             ViewBag.TongTon = list.Sum(p => p.Stock);
             ViewBag.SapHet = list.Count(p => p.Stock > 0 && p.Stock < 5);
-            return View();
-        }
+            ViewBag.Sizes = ProductStore.AllSizeNames();
 
-        // POST: Admin/DieuChinhKho - soLuong > 0: nhập kho, soLuong < 0: xuất/giảm kho
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult DieuChinhKho(int id, int? soLuong)
-        {
-            // soLuong để trống (null) hoặc bằng 0 thì báo lỗi, không để văng exception
-            if (!soLuong.HasValue || soLuong.Value == 0)
-            {
-                TempData["Loi"] = "Vui lòng nhập số lượng khác 0.";
-            }
-            else if (ProductStore.AdjustStock(id, soLuong.Value))
-            {
-                var p = ProductStore.Find(id);
-                TempData["ThongBao"] = (soLuong.Value > 0 ? "Nhập kho +" : "Xuất kho ") + soLuong.Value
-                                     + " cho \"" + p.NamePro + "\". Tồn hiện tại: " + p.Stock + ".";
-            }
-            else
-            {
-                TempData["Loi"] = "Không thể điều chỉnh: sản phẩm không tồn tại hoặc tồn kho sẽ bị âm.";
-            }
-            return RedirectToAction("SanPham");
+            // Thống kê nhập - xuất trong khoảng ngày (mặc định: toàn bộ thời gian)
+            var bc = ProductStore.MovementReport(tu, den).Where(r => r.Imported + r.Returned + r.Sold + r.OtherOut > 0).ToList();
+            ViewBag.BaoCao = bc;
+            ViewBag.TongNhap = bc.Sum(r => r.Imported);
+            ViewBag.TongHoan = bc.Sum(r => r.Returned);
+            ViewBag.TongBan = bc.Sum(r => r.Sold);
+            ViewBag.TongXuatKhac = bc.Sum(r => r.OtherOut);
+            ViewBag.LichSu = ProductStore.RecentMovements(30, tu, den);
+            return View();
         }
 
         // ===================== QUẢN LÝ NGƯỜI DÙNG (quản trị viên) =====================
@@ -65,7 +68,8 @@ namespace ELLA_Store.Controllers
                 Phone = u.Phone,
                 IsActive = u.IsActive,
                 CreatedAt = u.CreatedAt,
-                IsCurrentUser = u.Username == me
+                IsCurrentUser = u.Username == me,
+                IsProtected = UserStore.IsProtectedAdmin(u.Username)
             }).ToList();
             return View(rows);
         }
@@ -122,6 +126,8 @@ namespace ELLA_Store.Controllers
             var u = UserStore.FindUser(model.Username);
             if (u == null || u.Role != "Admin") return HttpNotFound();
 
+            if (UserStore.IsProtectedAdmin(model.Username) && !model.IsActive)
+                ModelState.AddModelError("IsActive", "Không thể khóa tài khoản admin gốc của hệ thống");
             if (model.Username == (string)Session["Username"] && !model.IsActive)
                 ModelState.AddModelError("IsActive", "Bạn không thể tự khóa tài khoản đang đăng nhập");
             if (!ModelState.IsValid) return View(model);
@@ -146,7 +152,9 @@ namespace ELLA_Store.Controllers
             var u = UserStore.FindUser(id);
             if (u == null || u.Role != "Admin") return HttpNotFound();
 
-            if (id == (string)Session["Username"])
+            if (UserStore.IsProtectedAdmin(id))
+                TempData["Loi"] = "Không được xóa tài khoản admin gốc của hệ thống.";
+            else if (id == (string)Session["Username"])
                 TempData["Loi"] = "Bạn không thể tự xóa tài khoản đang đăng nhập.";
             else if (UserStore.CountAdmins() <= 1)
                 TempData["Loi"] = "Không thể xóa quản trị viên cuối cùng.";

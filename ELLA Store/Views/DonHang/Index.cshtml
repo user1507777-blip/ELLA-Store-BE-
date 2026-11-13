@@ -16,7 +16,8 @@
         {
             <div class="order-box"><strong>@dem[s]</strong><br>@s</div>
         }
-        <div class="order-box"><strong style="color:#0f766e;">@(((decimal)ViewBag.DoanhThu).ToString("#,##0"))đ</strong><br>Doanh thu (đơn hoàn thành)</div>
+        <div class="order-box"><strong style="color:#b91c1c;">@ViewBag.ChoHoanTien</strong><br>Chờ hoàn tiền</div>
+        <div class="order-box"><strong style="color:#dc2626;">@(((decimal)ViewBag.DoanhThu).ToString("#,##0"))đ</strong><br>Doanh thu (đơn hoàn thành)</div>
     </div>
 
     <form method="get" action="/DonHang" class="admin-toolbar">
@@ -30,29 +31,6 @@
         </select>
         <button type="submit" class="btn">Lọc</button>
     </form>
-
-    @* ===== Voucher ===== *@
-    @if (Session["VoucherCode"] != null)
-    {
-        <div class="order-box" style="margin:15px 0;">
-            Đang áp dụng mã <strong>@Session["VoucherCode"]</strong>
-            (giảm @(((decimal)Session["DiscountAmount"]).ToString("#,##0"))đ)
-            @using (Html.BeginForm("HuyVoucher", "DonHang", FormMethod.Post, new { @class = "admin-inline" }))
-            {
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn">Bỏ mã</button>
-            }
-        </div>
-    }
-    else
-    {
-        using (Html.BeginForm("ApDungVoucher", "DonHang", FormMethod.Post, new { @class = "admin-toolbar" }))
-        {
-            @Html.AntiForgeryToken()
-            <input type="text" name="voucherCode" class="form-control" placeholder="Nhập mã voucher..." required style="max-width:250px;" />
-            <button type="submit" class="btn">Áp dụng Voucher</button>
-        }
-    }
 
     @Html.Partial("_DanhSachDon", Model.ToList())
 </div>

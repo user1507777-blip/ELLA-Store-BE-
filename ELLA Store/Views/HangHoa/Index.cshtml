@@ -20,6 +20,12 @@
                 <option value="@c.CategoryID" @(ViewBag.DanhMuc == c.CategoryID ? "selected" : "")>@c.CategoryName</option>
             }
         </select>
+        <select name="tieuChi" class="form-control" style="max-width:220px;">
+            @foreach (var tc in ELLA_Store.Models.ProductStore.TieuChiAdmin)
+            {
+                <option value="@tc.Key" @((string)ViewBag.TieuChi == tc.Key ? "selected" : "")>@tc.Value</option>
+            }
+        </select>
         <button type="submit" class="btn">Lọc</button>
         <a href="/HangHoa/Them" class="btn">+ Thêm hàng hóa</a>
     </form>
@@ -31,6 +37,8 @@
                 <th>Tên hàng hóa</th>
                 <th>Danh mục</th>
                 <th>Giá</th>
+                <th>Giảm giá</th>
+                <th>Đã bán</th>
                 <th>Tồn kho</th>
                 <th>Thao tác</th>
             </tr>
@@ -42,7 +50,19 @@
                     <td><img class="admin-thumb" src="@Url.Content("~/Content/image/" + p.ImagePro)" alt="@p.NamePro"></td>
                     <td>@p.NamePro</td>
                     <td>@p.CategoryName</td>
-                    <td>@p.Price.ToString("#,##0")đ</td>
+                    <td>
+                        @if (p.IsSale)
+                        {
+                            <s style="color:#94a3b8;">@p.Price.ToString("#,##0")đ</s><br>
+                            <strong style="color:#b91c1c;">@p.SalePrice.ToString("#,##0")đ</strong>
+                        }
+                        else
+                        {
+                            @:@p.Price.ToString("#,##0")đ
+                        }
+                    </td>
+                    <td>@(p.IsSale ? "-" + p.DiscountPercent + "%" : "—")</td>
+                    <td>@p.Sold</td>
                     <td>@p.Stock</td>
                     <td>
                         <a href="/HangHoa/ChiTiet/@p.ProductID">Chi tiết</a>
@@ -53,10 +73,9 @@
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="6" style="text-align:center;">Không có hàng hóa nào.</td></tr>
+                <tr><td colspan="8" style="text-align:center;">Không có hàng hóa nào.</td></tr>
             }
         </tbody>
     </table>
-    <p style="color:#64748b;">Nhập/xuất tồn kho thực hiện ở <a href="/Admin/SanPham">Quản lý kho hàng</a>.</p>
 </div>
 

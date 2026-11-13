@@ -42,12 +42,43 @@
                     <span class="error-msg">@Html.ValidationMessage("Price")</span>
                 </div>
 
+                <div class="form-group">
+                    <label>Giảm giá (%) - để 0 nếu không sale</label>
+                    <input type="number" name="DiscountPercent" min="0" max="90" value="@Model.DiscountPercent" class="form-control">
+                    <span class="error-msg">@Html.ValidationMessage("DiscountPercent")</span>
+                </div>
+
                 if (!isEdit)
                 {
                     <div class="form-group">
-                        <label>Tồn kho ban đầu</label>
-                        <input type="number" name="Stock" value="@Model.Stock" class="form-control">
-                        <span class="error-msg">@Html.ValidationMessage("Stock")</span>
+                        <label>Số lượng tồn theo từng size (để trống = 0)</label>
+                        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                            @foreach (var sz in (System.Collections.Generic.List<string>)ViewBag.Sizes)
+                            {
+                                <label style="font-weight:600;font-size:13px;">
+                                    Size @sz<br>
+                                    <input type="number" name="sl_@sz" min="0" max="100000" class="form-control" style="width:80px;" placeholder="0">
+                                </label>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group">
+                        <label>Nhập thêm hàng theo size (để trống = không nhập; số nhập được CỘNG vào tồn hiện tại)</label>
+                        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                            @foreach (var sz in (System.Collections.Generic.List<string>)ViewBag.Sizes)
+                            {
+                                var hienCo = System.Linq.Enumerable.FirstOrDefault(Model.Sizes, x => x.Size == sz);
+                                <div style="font-weight:600;font-size:13px;">
+                                    <div>Size @sz</div>
+                                    <div style="font-size:12px;color:#64748b;font-weight:400;">Tồn: @(hienCo == null ? 0 : hienCo.Quantity)</div>
+                                    <input type="number" name="@("them_" + sz)" min="0" max="100000" class="form-control" style="width:80px;" placeholder="+0">
+                                </div>
+                            }
+                        </div>
+                        @Html.ValidationSummary(true, "", new { @class = "error-msg" })
                     </div>
                 }
 

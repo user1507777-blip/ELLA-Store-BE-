@@ -18,6 +18,7 @@ namespace ELLA_Store.Models
         public string SearchTerm { get; set; }
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
+        public string Criteria { get; set; }         // tiêu chí lọc: "", sale, banchay, moi, conhang
         public string SortOrder { get; set; }        // "", "price_asc", "price_desc", "name"
     }
 }

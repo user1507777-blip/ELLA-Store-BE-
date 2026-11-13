@@ -2,9 +2,13 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Adidas";
+    ViewBag.BannerSlogan = "Impossible Is Nothing";
+    ViewBag.BannerMoTa = "Adidas mang đến những thiết kế kinh điển như Superstar, Ultraboost, kết hợp phong cách và hiệu năng.";
+    ViewBag.BannerVideo = "adidas.mp4";
 }
 
 <div class="container-custom">
-    <div class="section-title">Adidas</div>
+    @Html.Partial("_BannerHang", Model)
+    <div id="danhSachSanPham" class="section-title">Adidas</div>
     @Html.Partial("_DanhSachSanPham", Model)
 </div>

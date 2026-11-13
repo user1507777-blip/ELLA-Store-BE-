@@ -2,7 +2,7 @@
 .admin-body {
     display: block;
     min-height: 100vh;
-    background: #f1f5f9;
+    background: #f9fafb;
     font-family: "Segoe UI", Arial, sans-serif;
 }
 
@@ -12,8 +12,8 @@
     justify-content: space-between;
     height: 60px;
     padding: 0 24px;
-    background: #0f172a;
-    color: #e2e8f0;
+    background: #111827;
+    color: #e5e7eb;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -28,7 +28,7 @@
 }
 
     .admin-brand span {
-        color: #38bdf8;
+        color: #6b7280;
         margin-left: 4px;
         font-size: 14px;
         letter-spacing: 3px;
@@ -81,11 +81,11 @@
 }
 
     .admin-side a:hover {
-        background: #f1f5f9;
+        background: #f3f4f6;
     }
 
     .admin-side a.active {
-        background: #0f172a;
+        background: #111827;
         color: #fff;
     }
 
@@ -98,13 +98,13 @@
         margin: 0 0 18px;
         font-size: 24px;
         font-weight: 800;
-        color: #0f172a;
+        color: #111827;
     }
 
     .admin-main h3 {
         margin: 28px 0 10px;
         font-size: 17px;
-        color: #0f172a;
+        color: #111827;
     }
 
     .admin-main .container-custom {
@@ -189,7 +189,7 @@
         border: 0;
         cursor: pointer;
         color: #fff;
-        background: #0f766e;
+        background: #111827;
         padding: 4px 10px;
         border-radius: 6px;
     }
@@ -198,14 +198,14 @@
     width: 56px;
     height: 56px;
     object-fit: contain;
-    background: #edf5f4;
+    background: #f3f4f6;
     border-radius: 8px;
 }
 
 .admin-link {
     background: none;
     border: 0;
-    color: #0f766e;
+    color: #111827;
     cursor: pointer;
     padding: 0;
     font: inherit;
@@ -319,11 +319,11 @@
         }
 
         .admin-group summary:hover {
-            background: #f1f5f9;
+            background: #f3f4f6;
         }
 
         .admin-group summary.active {
-            background: #0f172a;
+            background: #111827;
             color: #fff;
         }
 
@@ -337,3 +337,102 @@
         padding: 7px 14px;
         margin: 0;
     }
+
+/* =====================================================================
+   BASIC ĐEN – TRẮNG (chỉ đổi khung: thanh trên + menu trái; muốn bỏ chỉ cần xóa khối này)
+   Màu chính: đen #111827, xám #6b7280 / #e5e7eb, nền trắng.
+   ===================================================================== */
+.admin-body {
+    background: #f9fafb;
+}
+
+/* thanh trên: trắng, viền dưới */
+.admin-topbar {
+    background: #fff;
+    color: #111827;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-brand {
+    color: #111827;
+}
+
+    .admin-brand span {
+        color: #6b7280;
+    }
+
+.admin-user {
+    color: #111827;
+}
+
+    .admin-user a {
+        color: #6b7280;
+    }
+
+        .admin-user a:hover {
+            color: #111827;
+        }
+
+/* menu trái */
+.admin-side {
+    background: #fff;
+    border-right: 1px solid #e5e7eb;
+}
+
+.admin-side-title {
+    color: #9ca3af;
+}
+
+.admin-side a, .admin-group summary {
+    color: #111827;
+}
+
+    .admin-side a:hover, .admin-group summary:hover {
+        background: #f3f4f6;
+    }
+
+    .admin-side a.active, .admin-group summary.active {
+        background: #111827;
+        color: #fff;
+    }
+
+/* tiêu đề */
+.admin-main h2, .admin-main h3 {
+    color: #111827;
+}
+
+/* ô nhập */
+.admin-main .form-control, .admin-main select, .admin-main input[type=text], .admin-main input[type=number], .admin-main input[type=date], .admin-main input[type=email] {
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+}
+
+    .admin-main .form-control:focus, .admin-main select:focus, .admin-main input:focus {
+        border-color: #111827;
+        box-shadow: 0 0 0 3px rgba(17,24,39,.1);
+        outline: none;
+    }
+
+/* bảng và thẻ thống kê: trắng, viền xám, số liệu đen */
+.admin-main .order-box, .admin-main .order-table, .admin-main .cart-table, .admin-main .auth-box {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+}
+
+    .admin-main .order-table th {
+        background: #f9fafb;
+        color: #111827;
+    }
+
+    .admin-main .order-box strong {
+        color: #111827 !important;
+    }
+
+    .admin-main .order-table td[style*="color"] {
+        color: #111827 !important;
+    }
+
+.admin-main .total-price {
+    color: #111827;
+}
