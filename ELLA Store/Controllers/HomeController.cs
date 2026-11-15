@@ -347,13 +347,11 @@ namespace ELLA_Store.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DangKy(RegisterViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            // Kiểm tra trùng tên đăng nhập TRƯỚC, để lỗi này luôn hiện cùng các lỗi khác
+            if (!string.IsNullOrWhiteSpace(model.Username) && UserStore.UsernameExists(model.Username.Trim()))
+                ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại, vui lòng chọn tên khác.");
 
-            if (UserStore.UsernameExists(model.Username))
-            {
-                ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại");
-                return View(model);
-            }
+            if (!ModelState.IsValid) return View(model);
 
             var user = new User
             {

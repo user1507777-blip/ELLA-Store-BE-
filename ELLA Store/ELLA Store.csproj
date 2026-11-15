@@ -135,6 +135,7 @@
     <Compile Include="Controllers\HangHoaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\KhachHangController.cs" />
+    <Compile Include="Controllers\KhachHangThaoTacController.cs" />
     <Compile Include="Controllers\ThongKeController.cs" />
     <Compile Include="Controllers\VoucherController.cs" />
     <Compile Include="Data\Category.cs">

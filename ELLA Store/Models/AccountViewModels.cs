@@ -4,6 +4,27 @@ using System.Text.RegularExpressions;
 
 namespace ELLA_Store.Models
 {
+    // Mật khẩu hợp lệ: 8-100 ký tự, KHÔNG chứa khoảng trắng, có ít nhất 1 chữ cái và 1 chữ số.
+    public class MatKhauHopLeAttribute : ValidationAttribute
+    {
+        public const string Loi = "Mật khẩu 8-100 ký tự, không chứa khoảng trắng, gồm cả chữ và số.";
+
+        public static bool Check(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return false;
+            if (s.Length < 8 || s.Length > 100) return false;
+            if (s.Any(char.IsWhiteSpace)) return false;
+            return s.Any(char.IsLetter) && s.Any(char.IsDigit);
+        }
+
+        public MatKhauHopLeAttribute() { ErrorMessage = Loi; }
+
+        public override bool IsValid(object value)
+        {
+            return value == null || Check(value as string);   // để Required lo trường hợp trống
+        }
+    }
+
     public class RegisterViewModel
     {
         [Required(ErrorMessage = "Vui lòng nhập tên đăng nhập")]
@@ -12,7 +33,7 @@ namespace ELLA_Store.Models
         public string Username { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
-        [StringLength(100, MinimumLength = 8, ErrorMessage = "Mật khẩu tối thiểu 8 ký tự")]
+        [MatKhauHopLe]
         [DataType(DataType.Password)]
         [Display(Name = "Mật khẩu")]
         public string Password { get; set; }
@@ -109,7 +130,7 @@ namespace ELLA_Store.Models
         public string OldPassword { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập mật khẩu mới")]
-        [StringLength(100, MinimumLength = 8, ErrorMessage = "Mật khẩu tối thiểu 8 ký tự")]
+        [MatKhauHopLe]
         [DataType(DataType.Password)]
         public string NewPassword { get; set; }
 

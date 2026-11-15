@@ -38,7 +38,7 @@ namespace ELLA_Store.Models
         public string Phone { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
-        [StringLength(100, MinimumLength = 8, ErrorMessage = "Mật khẩu tối thiểu 8 ký tự")]
+        [MatKhauHopLe]
         [DataType(DataType.Password)]
         [Display(Name = "Mật khẩu")]
         public string Password { get; set; }

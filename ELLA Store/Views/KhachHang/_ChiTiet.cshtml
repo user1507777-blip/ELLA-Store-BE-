@@ -123,6 +123,25 @@
                     <span style="display: inline-block; padding: 4px 12px; font-size: 12px; font-weight: 600; color: #b91c1c; background-color: #fee2e2; border-radius: 6px;">Đã khóa</span>
                 }
             </div>
+
+            <!-- NÚT KHÓA / MỞ KHÓA / XÓA (xử lý ở KhachHangThaoTacController) -->
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
+                @using (Html.BeginForm(Model.IsActive ? "Khoa" : "MoKhoa", "KhachHangThaoTac", new { id = Model.CustomerID }, FormMethod.Post,
+                    new { onsubmit = Model.IsActive ? "return confirm('Khóa tài khoản này? Khách sẽ không đăng nhập được.');" : "return true;" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <button type="submit" style="padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; background: #fff; color: #111827; border: 1px solid #d1d5db; border-radius: 8px;">@(Model.IsActive ? "Khóa tài khoản" : "Mở khóa")</button>
+                }
+                @if (donHang.Count == 0)
+                {
+                    using (Html.BeginForm("Xoa", "KhachHangThaoTac", new { id = Model.CustomerID }, FormMethod.Post,
+                        new { onsubmit = "return confirm('Xóa khách hàng này? Không thể hoàn tác.');" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" style="padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; background: #fff; color: #b91c1c; border: 1px solid #fecaca; border-radius: 8px;">Xóa khách hàng</button>
+                    }
+                }
+            </div>
         </div>
     </div>
 
