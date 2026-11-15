@@ -20,9 +20,11 @@ namespace ELLA_Store.Controllers
             if (!string.IsNullOrWhiteSpace(q))
                 list = list.Where(p => p.NamePro.IndexOf(q.Trim(), StringComparison.OrdinalIgnoreCase) >= 0).ToList();
 
-            // Sắp xếp: hang (mặc định) = theo hãng rồi A-Z | moi = mới nhất | az = A-Z | ton = tồn ít nhất
+            // Sắp xếp: hang (mặc định) = theo hãng rồi A-Z | moi = mới nhất | az = A-Z | ton = tồn ít nhất | id = ID tăng dần | iddesc = ID giảm dần
             switch (sx)
             {
+                case "id": list = list.OrderBy(p => p.ProductID).ToList(); break;
+                case "iddesc": list = list.OrderByDescending(p => p.ProductID).ToList(); break;
                 case "moi": list = list.OrderByDescending(p => p.ProductID).ToList(); break;
                 case "az": list = list.OrderBy(p => p.NamePro, StringComparer.CurrentCultureIgnoreCase).ToList(); break;
                 case "ton": list = list.OrderBy(p => p.Stock).ThenBy(p => p.NamePro, StringComparer.CurrentCultureIgnoreCase).ToList(); break;
