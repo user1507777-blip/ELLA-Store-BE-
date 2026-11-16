@@ -1,3 +1,7 @@
+/* ===== TAI KHOAN DANG NHAP ===== 
+  Tài Khoản Admin để cô đăng nhập  : admin   / Admin@123
+  Khach hang: khach01 / Khach@123
+================================== */
 IF DB_ID(N'MyStore') IS NULL CREATE DATABASE [MyStore];
 GO
 USE [MyStore]
